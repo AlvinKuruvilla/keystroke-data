@@ -2591,7 +2591,7 @@ else:
   fp_kit_df.reset_index(inplace=True, drop=True)
   # fp_kit_df = fp_kit_df.drop(columns=fp_kit_df.columns[fp_kit_df.eq(0).mean()>0.5])
   fp_word_level_df = generate_word_level_features_df(False)
-  with open("fake_profile_word_level.pkl", "rb") as f:
+  with open("fake_profile_word_level.pkl", "wb") as f:
     pickle.dump(fp_word_level_df, f)
 
   # fp_word_level_df = fp_word_level_df.drop(columns=fp_word_level_df.columns[fp_word_level_df.eq(0).mean()>0.5])
