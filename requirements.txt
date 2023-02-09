@@ -5,3 +5,5 @@ tqdm
 imblearn
 sklearn
 scipy
+xgboost
+taaled

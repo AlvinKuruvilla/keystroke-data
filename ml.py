@@ -1141,6 +1141,7 @@ def get_all_users_features_advanced_word(directory):
     user_files = os.listdir(directory)
     for i in tqdm(range(len(user_files))):
         user_file = user_files[i]
+        print("User File:", user_file)
         data_frame = pd.read_csv(directory + user_file)
         user_data = data_frame.values
         processed_data = get_dataframe_KIT(user_data)
@@ -1211,9 +1212,10 @@ def unique_word_level_words(use_bbmass: bool = True):
 
 
 def get_all_word_level_words():
-    bbmas_words = set(unique_word_level_words(True))
-    # fp_words = set(unique_word_level_words(False))
-    return list(bbmas_words)
+    # XXX: MAKE SURE THAT IF WE USE BBMAS AGAIN WE UNCOMMENT THIS LINE
+    # bbmas_words = set(unique_word_level_words(True))
+    fp_words = set(unique_word_level_words(False))
+    return list(fp_words)
 
 
 def generate_word_level_features_df(use_bbmass: bool = True):
@@ -1424,7 +1426,7 @@ def generate_kht_features_df(use_train=True):
             df = remove_invalid_keystrokes_from_data_list(data)
             user_data_kht = kht_from_dataframe(df)
             print(user_file)
-            print(user_data_kht)
+            # print(user_data_kht)
             for key, timings in user_data_kht.items():
                 time_mean = get_mean_timings(timings)
                 time_median = get_median_timing(timings)
@@ -2310,13 +2312,13 @@ def fake_profile_kit_into_df(fp_kit_dict):
 
 
 def select_k_best_features(X, feature_count=50):
-    y = pd.read_csv("/content/drive/My Drive/Fake_Profile/Filtered_Demographics.csv")
+    y = pd.read_csv("Filtered_Demographics.csv")
     id_df = y[["ID"]]
     Y_vector = id_df
 
     X_matrix = X.to_numpy()
     Y_vector = Y_vector.to_numpy()
-    # print(Y_vector.ravel().shape)
+    print(Y_vector.ravel().shape)
     Y_vector = Y_vector.ravel()
     # Temporary Fix to address an off by one error when selecting k_best features
     if not X_matrix.shape[0] == Y_vector.shape[0]:
@@ -2562,46 +2564,48 @@ def make_heatmap(combination: PlatformCombinations, title, top_feature_count=Non
     else:
         plot_interclass_MIC_heatmap(X, X2, title, top_feature_count=top_feature_count)
 
-if os.path.exists("facebook_result_df.pkl"):
-  with open("facebook_result_df.pkl", "rb") as f:
-    fp_result = pickle.load(f)
-else:
-  data = fake_profile_kht_feature_vector()
-  fp_kht_df = fake_profile_kht_into_df(data)
-  with open("fake_profile_kht_df.pkl", 'wb') as f:
-      pickle.dump(fp_kht_df, f)
+df = generate_kht_features_df()
+print(df)
+# if os.path.exists("facebook_result_df.pkl"):
+#   with open("facebook_result_df.pkl", "rb") as f:
+#     fp_result = pickle.load(f)
+# else:
+#   data = fake_profile_kht_feature_vector()
+#   fp_kht_df = fake_profile_kht_into_df(data)
+#   with open("fake_profile_kht_df.pkl", 'wb') as f:
+#       pickle.dump(fp_kht_df, f)
 
-#   os.chdir('/content/drive/My Drive/Fake_Profile/')
-  # with open("kht.pkl", "rb") as f:
-  #   df1 = pickle.load(f)
-  fp_kht_df.reset_index(inplace=True, drop=True)
-  # fp_kht_df = fp_kht_df.drop(columns=fp_kht_df.columns[fp_kht_df.eq(0).mean()>0.5])
-  data2 = fake_profile_kit_feature_vector()
-#   os.chdir('/content/drive/My Drive/Fake_Profile/')
-  with open("fake_profile_pickled_kit_data.pkl", 'wb') as f:
-      pickle.dump(data2, f)
-  # with open("fake_profile_pickled_kit_data.pkl", "rb") as f:
-  #     data2 = pickle.load(f)
+# #   os.chdir('/content/drive/My Drive/Fake_Profile/')
+#   # with open("kht.pkl", "rb") as f:
+#   #   df1 = pickle.load(f)
+#   fp_kht_df.reset_index(inplace=True, drop=True)
+#   # fp_kht_df = fp_kht_df.drop(columns=fp_kht_df.columns[fp_kht_df.eq(0).mean()>0.5])
+#   data2 = fake_profile_kit_feature_vector()
+# #   os.chdir('/content/drive/My Drive/Fake_Profile/')
+#   with open("fake_profile_pickled_kit_data.pkl", 'wb') as f:
+#       pickle.dump(data2, f)
+#   # with open("fake_profile_pickled_kit_data.pkl", "rb") as f:
+#   #     data2 = pickle.load(f)
 
-  fp_kit_df = fake_profile_kit_into_df(data2)
-  fp_kit_df.reset_index(inplace=True, drop=True)
-  # fp_kit_df = fp_kit_df.drop(columns=fp_kit_df.columns[fp_kit_df.eq(0).mean()>0.5])
-  fp_word_level_df = generate_word_level_features_df(False)
-  with open("fake_profile_word_level_df.pkl", 'wb') as f:
-      pickle.dump(fp_word_level_df, f)
+#   fp_kit_df = fake_profile_kit_into_df(data2)
+#   fp_kit_df.reset_index(inplace=True, drop=True)
+#   # fp_kit_df = fp_kit_df.drop(columns=fp_kit_df.columns[fp_kit_df.eq(0).mean()>0.5])
+#   fp_word_level_df = generate_word_level_features_df(False)
+#   with open("fake_profile_word_level_df.pkl", 'wb') as f:
+#       pickle.dump(fp_word_level_df, f)
 
-  # fp_word_level_df = fp_word_level_df.drop(columns=fp_word_level_df.columns[fp_word_level_df.eq(0).mean()>0.5])
-  fp_result = pd.concat([fp_kht_df,fp_kit_df,fp_word_level_df], axis=1)
-  # fp_result = fp_result.drop(columns=fp_result.columns[fp_result.eq(0).mean()>0.5])
-#   fp_result.dropna(inplace=True)
-#   os.chdir('/content/drive/My Drive/Fake_Profile/')
-  with open("facebook_result_df.pkl", "wb") as f:
-        pickle.dump(fp_result, f)
+#   # fp_word_level_df = fp_word_level_df.drop(columns=fp_word_level_df.columns[fp_word_level_df.eq(0).mean()>0.5])
+#   fp_result = pd.concat([fp_kht_df,fp_kit_df,fp_word_level_df], axis=1)
+#   # fp_result = fp_result.drop(columns=fp_result.columns[fp_result.eq(0).mean()>0.5])
+# #   fp_result.dropna(inplace=True)
+# #   os.chdir('/content/drive/My Drive/Fake_Profile/')
+#   with open("facebook_result_df.pkl", "wb") as f:
+#         pickle.dump(fp_result, f)
 
-make_heatmap(PlatformCombinations.FF, "FF Manhattan All MIC Features", 10)
+# make_heatmap(PlatformCombinations.FF, "FF Manhattan All MIC Features", 10)
 # make_heatmap(PlatformCombinations.FI, "FI Manhattan All MIC Features")
 # make_heatmap(PlatformCombinations.FT, "FT Manhattan All MIC Features")
 # make_heatmap(PlatformCombinations.II, "II Manhattan All MIC Features")
 # make_heatmap(PlatformCombinations.IT, "IT Manhattan All MIC Features")
-make_heatmap(PlatformCombinations.TT, "TT Manhattan All MIC Features", 10)
+# make_heatmap(PlatformCombinations.TT, "TT Manhattan All MIC Features", 10)
 
