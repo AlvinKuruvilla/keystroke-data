@@ -2578,7 +2578,7 @@ else:
   data = fake_profile_kht_feature_vector()
   fp_kht_df = fake_profile_kht_into_df(data)
   fp_kht_df.reset_index(inplace=True, drop=True)
-  with open("fake_profile_kht.pkl", "rb") as f:
+  with open("fake_profile_kht.pkl", "wb") as f:
     df1 = pickle.dump(fp_kht_df, f)
   # fp_kht_df = fp_kht_df.drop(columns=fp_kht_df.columns[fp_kht_df.eq(0).mean()>0.5])
   data2 = fake_profile_kit_feature_vector()
