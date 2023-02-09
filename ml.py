@@ -2577,15 +2577,13 @@ if os.path.exists("facebook_result_df.pkl"):
 else:
   data = fake_profile_kht_feature_vector()
   fp_kht_df = fake_profile_kht_into_df(data)
-  os.chdir('/content/drive/My Drive/Fake_Profile/')
-  # with open("kht.pkl", "rb") as f:
-  #   df1 = pickle.load(f)
   fp_kht_df.reset_index(inplace=True, drop=True)
+  with open("fake_profile_kht.pkl", "rb") as f:
+    df1 = pickle.dump(fp_kht_df, f)
   # fp_kht_df = fp_kht_df.drop(columns=fp_kht_df.columns[fp_kht_df.eq(0).mean()>0.5])
   data2 = fake_profile_kit_feature_vector()
-  os.chdir('/content/drive/My Drive/Fake_Profile/')
-  # with open("fake_profile_pickled_kit_data.pkl", 'wb') as f:
-  #     pickle.dump(data2, f)
+  with open("fake_profile_pickled_kit_data.pkl", 'wb') as f:
+      pickle.dump(data2, f)
   # with open("fake_profile_pickled_kit_data.pkl", "rb") as f:
   #     data2 = pickle.load(f)
 
@@ -2593,11 +2591,13 @@ else:
   fp_kit_df.reset_index(inplace=True, drop=True)
   # fp_kit_df = fp_kit_df.drop(columns=fp_kit_df.columns[fp_kit_df.eq(0).mean()>0.5])
   fp_word_level_df = generate_word_level_features_df(False)
+  with open("fake_profile_word_level.pkl", "rb") as f:
+    pickle.dump(fp_word_level_df, f)
+
   # fp_word_level_df = fp_word_level_df.drop(columns=fp_word_level_df.columns[fp_word_level_df.eq(0).mean()>0.5])
   fp_result = pd.concat([fp_kht_df,fp_kit_df,fp_word_level_df], axis=1)
   # fp_result = fp_result.drop(columns=fp_result.columns[fp_result.eq(0).mean()>0.5])
   fp_result.dropna(inplace=True)
-  os.chdir('/content/drive/My Drive/Fake_Profile/')
   with open("facebook_result_df.pkl", "wb") as f:
         pickle.dump(fp_result, f)
 
