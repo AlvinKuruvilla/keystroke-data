@@ -2565,12 +2565,7 @@ def make_heatmap(combination: PlatformCombinations, title, top_feature_count=Non
     else:
         plot_interclass_MIC_heatmap(X, X2, title, top_feature_count=top_feature_count)
 
-# df = generate_kht_features_df(True)
-# with open("fp_kht_features_df.pkl", "wb") as f:
-#     pickle.dump(df, f)
-# # TODO: Check that a good portion of the columns have more than 50 % nonzero values
-# df = df.drop(columns=df.columns[df.eq(0).mean()>0.5])
-# print(df)
+
 if os.path.exists("instagram_result_df.pkl"):
   with open("instagram_result_df.pkl", "rb") as f:
     fp_result = pickle.load(f)
@@ -2584,24 +2579,24 @@ else:
   data2 = fake_profile_kit_feature_vector()
   with open("fake_profile_pickled_kit_data.pkl", 'wb') as f:
       pickle.dump(data2, f)
-  # with open("fake_profile_pickled_kit_data.pkl", "rb") as f:
-  #     data2 = pickle.load(f)
+#   # with open("fake_profile_pickled_kit_data.pkl", "rb") as f:
+#   #     data2 = pickle.load(f)
 
   fp_kit_df = fake_profile_kit_into_df(data2)
   fp_kit_df.reset_index(inplace=True, drop=True)
   # fp_kit_df = fp_kit_df.drop(columns=fp_kit_df.columns[fp_kit_df.eq(0).mean()>0.5])
-  fp_word_level_df = generate_word_level_features_df(False)
-  with open("fake_profile_word_level.pkl", "wb") as f:
-    pickle.dump(fp_word_level_df, f)
+#   fp_word_level_df = generate_word_level_features_df(False)
+#   with open("fake_profile_word_level.pkl", "wb") as f:
+#     pickle.dump(fp_word_level_df, f)
 
-  # fp_word_level_df = fp_word_level_df.drop(columns=fp_word_level_df.columns[fp_word_level_df.eq(0).mean()>0.5])
-  fp_result = pd.concat([fp_kht_df,fp_kit_df,fp_word_level_df], axis=1)
-  # fp_result = fp_result.drop(columns=fp_result.columns[fp_result.eq(0).mean()>0.5])
+#   # fp_word_level_df = fp_word_level_df.drop(columns=fp_word_level_df.columns[fp_word_level_df.eq(0).mean()>0.5])
+  fp_result = pd.concat([fp_kht_df,fp_kit_df], axis=1)
+#   # fp_result = fp_result.drop(columns=fp_result.columns[fp_result.eq(0).mean()>0.5])
   fp_result.dropna(inplace=True)
   with open("instagram_result_df.pkl", "wb") as f:
         pickle.dump(fp_result, f)
 
-make_heatmap(PlatformCombinations.FF, "FF Manhattan All MIC Features")
+# make_heatmap(PlatformCombinations.FF, "FF Manhattan All MIC Features")
 # make_heatmap(PlatformCombinations.FI, "FI Manhattan All MIC Features")
 # make_heatmap(PlatformCombinations.FT, "FT Manhattan All MIC Features")
 # make_heatmap(PlatformCombinations.II, "II Manhattan All MIC Features")
