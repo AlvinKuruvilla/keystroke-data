@@ -2337,7 +2337,7 @@ def select_k_best_features(X, feature_count=50):
 
 
 def select_features(X, using_test_set=False):
-    y = pd.read_csv("/content/drive/My Drive/Fake_Profile/Filtered_Demographics.csv")
+    y = pd.read_csv("Filtered_Demographics.csv")
     id_df = y[["ID"]]
     Y_vector = id_df
     features = X.columns
@@ -2601,7 +2601,7 @@ else:
   with open("facebook_result_df.pkl", "wb") as f:
         pickle.dump(fp_result, f)
 
-# make_heatmap(PlatformCombinations.FF, "FF Manhattan All MIC Features")
+make_heatmap(PlatformCombinations.FF, "FF Manhattan All MIC Features")
 # make_heatmap(PlatformCombinations.FI, "FI Manhattan All MIC Features")
 # make_heatmap(PlatformCombinations.FT, "FT Manhattan All MIC Features")
 # make_heatmap(PlatformCombinations.II, "II Manhattan All MIC Features")
