@@ -1167,7 +1167,7 @@ def generate_word_level_df(use_bbmass: bool = True):
     else:
         # TEMP - change dir
         desktop_advanced_word_features = get_all_users_features_advanced_word(
-            "Facebook/"
+            "Instagram/"
         )
     return pd.DataFrame.from_dict(desktop_advanced_word_features)
 
@@ -1195,7 +1195,7 @@ def unique_word_level_words(use_bbmass: bool = True):
     else:
         # TEMP - change dir
         desktop_advanced_word_features = get_all_users_features_advanced_word(
-            "Facebook/"
+            "Instagram/"
         )
     final_features_dict = defaultdict(list)
     user_ids = list(desktop_advanced_word_features.keys())
@@ -1230,7 +1230,7 @@ def generate_word_level_features_df(use_bbmass: bool = True):
     else:
         # TEMP - change dir
         desktop_advanced_word_features = get_all_users_features_advanced_word(
-            "Facebook/"
+            "Instagram/"
         )
     final_features_dict = defaultdict(list)
     user_ids = list(desktop_advanced_word_features.keys())
@@ -1392,7 +1392,7 @@ def generate_kht_features_df(use_train=True):
     demographics = make_gender_df()
     # TEMP - change dir
     if use_train:
-        dir = "Facebook/"
+        dir = "Instagram/"
     else:
         dir = "Desktop/"
     final_df = pd.DataFrame(
@@ -1483,7 +1483,7 @@ def generate_kht_features_df(use_train=True):
 def generate_kit_features_df(use_train=True):
     demographics = make_gender_df()
     if use_train:
-        dir = "Facebook/"
+        dir = "Instagram/"
     else:
         dir = "Test/"
     f1 = pd.DataFrame()
@@ -2571,8 +2571,8 @@ def make_heatmap(combination: PlatformCombinations, title, top_feature_count=Non
 # # TODO: Check that a good portion of the columns have more than 50 % nonzero values
 # df = df.drop(columns=df.columns[df.eq(0).mean()>0.5])
 # print(df)
-if os.path.exists("facebook_result_df.pkl"):
-  with open("facebook_result_df.pkl", "rb") as f:
+if os.path.exists("instagram_result_df.pkl"):
+  with open("instagram_result_df.pkl", "rb") as f:
     fp_result = pickle.load(f)
 else:
   data = fake_profile_kht_feature_vector()
@@ -2598,7 +2598,7 @@ else:
   fp_result = pd.concat([fp_kht_df,fp_kit_df,fp_word_level_df], axis=1)
   # fp_result = fp_result.drop(columns=fp_result.columns[fp_result.eq(0).mean()>0.5])
   fp_result.dropna(inplace=True)
-  with open("facebook_result_df.pkl", "wb") as f:
+  with open("instagram_result_df.pkl", "wb") as f:
         pickle.dump(fp_result, f)
 
 make_heatmap(PlatformCombinations.FF, "FF Manhattan All MIC Features")
