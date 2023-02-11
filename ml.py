@@ -2529,34 +2529,34 @@ def plot_interclass_MIC_heatmap(X, X2, title, top_feature_count=None):
 def make_heatmap(combination: PlatformCombinations, title, top_feature_count=None):
     # os.chdir("/content/drive/My Drive/Fake_Profile/")
     if combination == PlatformCombinations.FF:
-        with open("facebook_result_df.pkl", "rb") as f:
+        with open("ec2/Facebook/facebook_result_df.pkl", "rb") as f:
             test_df = pickle.load(f)
-        with open("facebook_result_df.pkl", "rb") as f:
+        with open("ec2/Facebook/facebook_result_df.pkl", "rb") as f:
             test_df2 = pickle.load(f)
     elif combination == PlatformCombinations.FI:
-        with open("facebook_result_df.pkl", "rb") as f:
+        with open("ec2/Facebook/facebook_result_df.pkl", "rb") as f:
             test_df = pickle.load(f)
-        with open("instagram_result_df.pkl", "rb") as f:
+        with open("ec2/Instagram/instagram_result_df.pkl", "rb") as f:
             test_df2 = pickle.load(f)
     elif combination == PlatformCombinations.FT:
-        with open("facebook_result_df.pkl", "rb") as f:
+        with open("ec2/Facebook/facebook_result_df.pkl", "rb") as f:
             test_df = pickle.load(f)
-        with open("twitter_result_df.pkl", "rb") as f:
+        with open("ec2/Twitter/twitter_result_df.pkl", "rb") as f:
             test_df2 = pickle.load(f)
     elif combination == PlatformCombinations.II:
-        with open("instagram_result_df.pkl", "rb") as f:
+        with open("ec2/Instagram/instagram_result_df.pkl", "rb") as f:
             test_df = pickle.load(f)
-        with open("instagram_result_df.pkl", "rb") as f:
+        with open("ec2/Instagram/instagram_result_df.pkl", "rb") as f:
             test_df2 = pickle.load(f)
     elif combination == PlatformCombinations.IT:
-        with open("instagram_result_df.pkl", "rb") as f:
+        with open("ec2/Instagram/instagram_result_df.pkl", "rb") as f:
             test_df = pickle.load(f)
         with open("twitter_result_df.pkl", "rb") as f:
             test_df2 = pickle.load(f)
     elif combination == PlatformCombinations.TT:
-        with open("twitter_result_df.pkl", "rb") as f:
+        with open("ec2/Twitter/twitter_result_df.pkl", "rb") as f:
             test_df = pickle.load(f)
-        with open("twitter_result_df.pkl", "rb") as f:
+        with open("ec2/Twitter/twitter_result_df.pkl", "rb") as f:
             test_df2 = pickle.load(f)
     X = test_df
     X2 = test_df2
@@ -2596,10 +2596,10 @@ def make_heatmap(combination: PlatformCombinations, title, top_feature_count=Non
 #   with open("twitter_result_df.pkl", "wb") as f:
 #         pickle.dump(fp_result, f)
 
-# make_heatmap(PlatformCombinations.FF, "FF Manhattan All MIC Features")
+make_heatmap(PlatformCombinations.FF, "FF Manhattan All MIC Features", 10)
 # make_heatmap(PlatformCombinations.FI, "FI Manhattan All MIC Features")
 # make_heatmap(PlatformCombinations.FT, "FT Manhattan All MIC Features")
-# make_heatmap(PlatformCombinations.II, "II Manhattan All MIC Features")
+make_heatmap(PlatformCombinations.II, "II Manhattan All MIC Features", 10)
 # make_heatmap(PlatformCombinations.IT, "IT Manhattan All MIC Features")
-make_heatmap(PlatformCombinations.TT, "TT Manhattan All MIC Features")
+make_heatmap(PlatformCombinations.TT, "TT Manhattan All MIC Features", 10)
 
