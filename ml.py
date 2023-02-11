@@ -2560,6 +2560,9 @@ def make_heatmap(combination: PlatformCombinations, title, top_feature_count=Non
             test_df2 = pickle.load(f)
     X = test_df
     X2 = test_df2
+    X = X.drop(columns=X.columns[X.eq(0).mean()>0.5])
+    X2 = X2.drop(columns=X2.columns[X2.eq(0).mean()>0.5])
+    
     if top_feature_count == None:
         plot_interclass_MIC_heatmap(X, X2, title)
     else:
