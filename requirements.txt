@@ -8,3 +8,4 @@ scipy
 xgboost
 taaled
 plotnine
+opencv-python
