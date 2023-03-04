@@ -51,10 +51,24 @@ def get_KHT_features(df):
     return features
 
 
+def unique_kit_keypairs(df):
+    processed_df = remove_invalid_keystrokes(df)
+
+    all_keys = processed_df.iloc[:, 1]
+    print(all_keys)
+    pairs = []
+    for first, second in zip(all_keys, all_keys[1:]):
+        if not first == second:
+            pairs.append(first + second)
+    return pairs
+
+
 if __name__ == "__main__":
     files = os.listdir(os.path.join(os.getcwd(), "Facebook"))
-    df = pd.read_csv(os.path.join(os.getcwd(), "Facebook", "f_319.csv"), header=None)
+    df = pd.read_csv(os.path.join(os.getcwd(), "samples", "s1.csv"), header=None)
     data = get_KHT_features(df)
+    key_pairs = unique_kit_keypairs(df)
+    print(key_pairs)
     # for f in tqdm(files):
     #     df = pd.read_csv(os.path.join(os.getcwd(), "Facebook", f), header=None)
     #     print(f)
