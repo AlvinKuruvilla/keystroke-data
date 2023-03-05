@@ -3,6 +3,7 @@ from collections import defaultdict
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
+from itertools import islice
 
 
 def remove_invalid_keystrokes(df):
@@ -51,6 +52,125 @@ def get_KHT_features(df):
     return features
 
 
+def kit_features(keypair, base_df, feature_type):
+    df = remove_invalid_keystrokes(base_df)
+    df["visited"] = False
+    features = defaultdict(list)
+    if feature_type == 1:
+        for index, row in df.iterrows():
+            # A shortcu/hack to prevent the algorithm from searching for a "corresponding match" more than 2 rows away from the initial match
+            max_hops = 0
+            if row[1] == keypair[0] and row[0] == "P" and row["visited"] == False:
+                # print("FIRST MATCH:")
+                # print(row)
+                # input()
+                release_time = row[2]
+                row["visited"] = True
+                for next_index, next_row in islice(df.iterrows(), index, None):
+                    if max_hops < 2:
+                        max_hops += 1
+                        if (
+                            next_row[1] == keypair[1]
+                            and next_row[0] == "R"
+                            and next_row["visited"] == False
+                        ):
+                            # print("CORRESPONDING MATCH:")
+                            # print(next_row)
+                            # input()
+                            press_time = next_row[2]
+                            next_row["visited"] = True
+                            features[keypair[0] + keypair[1]].append(
+                                press_time - release_time
+                            )
+                            # After we find our first match we don't want to keep looking for rows with the second key
+                            break
+    elif featre_type == 2:
+        for index, row in df.iterrows():
+            # A shortcu/hack to prevent the algorithm from searching for a "corresponding match" more than 2 rows away from the initial match
+            max_hops = 0
+            if row[1] == keypair[0] and row[0] == "R" and row["visited"] == False:
+                # print("FIRST MATCH:")
+                # print(row)
+                # input()
+                release_time = row[2]
+                row["visited"] = True
+                for next_index, next_row in islice(df.iterrows(), index, None):
+                    if max_hops < 2:
+                        max_hops += 1
+                        if (
+                            next_row[1] == keypair[1]
+                            and next_row[0] == "R"
+                            and next_row["visited"] == False
+                        ):
+                            # print("CORRESPONDING MATCH:")
+                            # print(next_row)
+                            # input()
+                            press_time = next_row[2]
+                            next_row["visited"] = True
+                            features[keypair[0] + keypair[1]].append(
+                                press_time - release_time
+                            )
+                            # After we find our first match we don't want to keep looking for rows with the second key
+                            break
+    elif feature_type == 3:
+        for index, row in df.iterrows():
+            # A shortcu/hack to prevent the algorithm from searching for a "corresponding match" more than 2 rows away from the initial match
+            max_hops = 0
+            if row[1] == keypair[0] and row[0] == "p" and row["visited"] == False:
+                # print("FIRST MATCH:")
+                # print(row)
+                # input()
+                release_time = row[2]
+                row["visited"] = True
+                for next_index, next_row in islice(df.iterrows(), index, None):
+                    if max_hops < 2:
+                        max_hops += 1
+                        if (
+                            next_row[1] == keypair[1]
+                            and next_row[0] == "P"
+                            and next_row["visited"] == False
+                        ):
+                            # print("CORRESPONDING MATCH:")
+                            # print(next_row)
+                            # input()
+                            press_time = next_row[2]
+                            next_row["visited"] = True
+                            features[keypair[0] + keypair[1]].append(
+                                press_time - release_time
+                            )
+                            # After we find our first match we don't want to keep looking for rows with the second key
+                            break
+    if feature_type == 4:
+        for index, row in df.iterrows():
+            # A shortcu/hack to prevent the algorithm from searching for a "corresponding match" more than 2 rows away from the initial match
+            max_hops = 0
+            if row[1] == keypair[0] and row[0] == "R" and row["visited"] == False:
+                # print("FIRST MATCH:")
+                # print(row)
+                # input()
+                release_time = row[2]
+                row["visited"] = True
+                for next_index, next_row in islice(df.iterrows(), index, None):
+                    if max_hops < 2:
+                        max_hops += 1
+                        if (
+                            next_row[1] == keypair[1]
+                            and next_row[0] == "P"
+                            and next_row["visited"] == False
+                        ):
+                            # print("CORRESPONDING MATCH:")
+                            # print(next_row)
+                            # input()
+                            press_time = next_row[2]
+                            next_row["visited"] = True
+                            features[keypair[0] + keypair[1]].append(
+                                press_time - release_time
+                            )
+                            # After we find our first match we don't want to keep looking for rows with the second key
+                            break
+    return features
+
+
 def unique_kit_keypairs(df):
     processed_df = remove_invalid_keystrokes(df)
 
@@ -58,8 +178,11 @@ def unique_kit_keypairs(df):
     print(all_keys)
     pairs = []
     for first, second in zip(all_keys, all_keys[1:]):
+        pair = []
         if not first == second:
-            pairs.append(first + second)
+            pair.append(first)
+            pair.append(second)
+            pairs.append(pair)
     return pairs
 
 
@@ -69,6 +192,10 @@ if __name__ == "__main__":
     data = get_KHT_features(df)
     key_pairs = unique_kit_keypairs(df)
     print(key_pairs)
+    for key_pair in key_pairs:
+        feats = kit_features(key_pair, df, 1)
+        print(key_pair)
+        print(feats)
     # for f in tqdm(files):
     #     df = pd.read_csv(os.path.join(os.getcwd(), "Facebook", f), header=None)
     #     print(f)
