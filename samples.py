@@ -6,6 +6,16 @@ from tqdm import tqdm
 from itertools import islice
 
 
+def get_new_format():
+    df = pd.read_csv(
+        os.path.join(os.getcwd(), "samples", "social_network_dataset_hofstra.csv"),
+        usecols=["key", "direction", "time"],
+    )
+    df = df[["direction", "key", "time"]]
+    df["direction"] = df["direction"].apply(lambda x: "P" if x == 1 else "R")
+    return df
+
+
 def remove_invalid_keystrokes(df):
     # A helper function that takes as input a dataframe, and return a new
     # dataframe no longer containing rows with the string "<0>"
@@ -29,7 +39,10 @@ def balance_lists(release, press):
 
 def get_KHT_features(df):
     processed_df = remove_invalid_keystrokes(df)
+    print(processed_df)
+    input()
     unique_keys = processed_df.iloc[:, 1].unique()
+
     features = defaultdict(list)
     for key in unique_keys:
         rows_for_key = processed_df.loc[processed_df[1] == key]
@@ -68,7 +81,7 @@ def unique_kit_keypairs(df):
 
 
 def new_kit(base_df, feature_type):
-    # FIXME: Therre is a bug where the previosuly used rows are not set to visited, so if any repeat keys show up the
+    # FIXME: Therre is a bug where the previosuly used rows are set to visited but if any repeat keys show up the
     # algorithm will choose the first time they appear from the begining of the file
     df = remove_invalid_keystrokes(base_df)
     pairs = unique_kit_keypairs(df)
@@ -118,6 +131,8 @@ def new_kit(base_df, feature_type):
 
 if __name__ == "__main__":
     files = os.listdir(os.path.join(os.getcwd(), "Facebook"))
+    # df = get_new_format()
+    # data = get_KHT_features(df)
     df = pd.read_csv(os.path.join(os.getcwd(), "samples", "s1.csv"), header=None)
     data = get_KHT_features(df)
     key_pairs = unique_kit_keypairs(df)
