@@ -185,7 +185,7 @@ def compare_algos():
 if __name__ == "__main__":
     df = get_new_format()
 
-    data = get_KHT_features(df)
+    # data = get_KHT_features(df)
     # processed_KHT_data = {}
     # for key in list(data.keys()):
     #     res = remove_outliers_for_dictionary_data(data[key])
@@ -196,10 +196,15 @@ if __name__ == "__main__":
 
     # TODO: Spawn distinct threads to run each of the KIT flight calculations in parallel
     # https://stackoverflow.com/questions/46301933/how-to-wait-till-all-threads-finish-their-work
-    print(kit_features(df, 1))
-    # for f in tqdm(files):
-    #     df = pd.read_csv(os.path.join(os.getcwd(), "Facebook", f), header=None)
-    #     print(f)
-    #     data = get_KHT_features(df)
-    #     print(data)
-    #     print(data)
+    data = print(kit_features(df, 1))
+    with open("kit_features_" + 1, "w") as f:
+        f.write(data)
+    data = print(kit_features(df, 2))
+    with open("kit_features_" + 2, "w") as f:
+        f.write(data)
+    data = print(kit_features(df, 3))
+    with open("kit_features_" + 3, "w") as f:
+        f.write(data)
+    data = print(kit_features(df, 4))
+    with open("kit_features_" + 4, "w") as f:
+        f.write(data)
