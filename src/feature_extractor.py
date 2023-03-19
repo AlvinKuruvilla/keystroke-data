@@ -52,14 +52,16 @@ if __name__ == "__main__":
     instagram_df = instagram_data(raw_df)
     twitter_df = twitter_data(raw_df)
 
-    data = kit_features(instagram_df, 1)
     # processed_KHT_data = {}
     # for key in list(data.keys()):
     #     res = remove_outliers_for_dictionary_data(data[key])
     #     processed_KHT_data[key] = res
     # # # TODO: Double check this doesn't have unexpected side-effects when removing keys with empty value lists
     # res = {k: v for k, v in processed_KHT_data.items() if v}
-    with open(
-        os.path.join(os.getcwd(), "features", "raw_Instagram_KIT_1.json"), "w"
-    ) as f:
-        json.dump(data, f)
+    for i in range(1, 5):
+        data = kit_features(instagram_df, i)
+        with open(
+            os.path.join(os.getcwd(), "features", "raw_Instagram_KIT_" + i + ".json"),
+            "w",
+        ) as f:
+            json.dump(data, f)
