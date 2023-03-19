@@ -1,21 +1,21 @@
-import cv2
+import ntpath
 import os
 import random
-import pandas as pd
-import numpy as np
-import ntpath
-from tqdm import tqdm
+
+import cv2
 import joblib
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
 
 from pgm import write_pgm
 
 
 def path_leaf(path, keep_extension=True):
-    if keep_extension:
-        head, tail = ntpath.split(path)
-        return tail or ntpath.basename(head)
-    else:
+    if not keep_extension:
         return os.path.splitext(path)[0]
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
 
 
 def _task(i, pgm_filename):
@@ -64,10 +64,11 @@ def select_random_image(just_filename: bool = False):
     pgms = os.listdir(os.path.join(os.getcwd(), "orl"))
     index = random.randrange(0, len(pgms))
     pgm = pgms[index]
-    if just_filename == False:
-        return os.path.join(os.getcwd(), "orl", pgm)
-    else:
-        return path_leaf(os.path.join(os.getcwd(), "orl", pgm))
+    return (
+        path_leaf(os.path.join(os.getcwd(), "orl", pgm))
+        if just_filename
+        else os.path.join(os.getcwd(), "orl", pgm)
+    )
 
 
 # TODO: Apparently there are outlier users in the CMU dataset, check the paper for which they are
@@ -77,9 +78,7 @@ def reshape_cmu_row(row_idx):
     assert row_idx <= df.shape[0]
     row = df.iloc[[row_idx]].to_numpy()[0]
     row = np.pad(row, (0, 112 * 92 - 31), mode="constant")
-    # print(row)
-    reshaped_row = row.reshape(112, 92)
-    return reshaped_row
+    return row.reshape(112, 92)
 
 
 def create_combined_matrix(keystroke_matrix, pgm_path):
@@ -96,4 +95,5 @@ if __name__ == "__main__":
     # keystroke_matrix = reshape_cmu_row(1)
     pgm_path = select_random_image(just_filename=True)
     # print(create_combined_matrix(keystroke_matrix, pgm_path).shape)
+    generate_combined_image(pgm_path, True)
     generate_combined_image(pgm_path, True)
