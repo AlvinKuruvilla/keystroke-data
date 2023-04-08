@@ -1,3 +1,4 @@
+import json
 import os
 from collections import defaultdict
 
@@ -9,34 +10,26 @@ from tqdm import tqdm
 def get_new_format():
     df = pd.read_csv(
         os.path.join(os.getcwd(), "samples", "fpd_new_session_no_nans.csv"),
-        usecols=["key", "direction", "time"],
     )
-    df = df[["direction", "key", "time"]]
-    print(df)
-    df = df.astype({"direction": str, "key": str, "time": float})
-    print(df.dtypes)
-    input("New dataset")
-    return df
+    df = df[["direction", "key", "time", "user_ids"]]
+    df = df.astype({"direction": str, "key": str,
+                   "time": float, "user_ids": str})
+    return remove_invalid_keystrokes(df)
 
 
+# https://stackoverflow.com/questions/18172851/deleting-dataframe-row-in-pandas-based-on-column-value
 def remove_invalid_keystrokes(df):
     # A helper function that takes as input a dataframe, and return a new
     # dataframe no longer containing rows with the string "<0>"
-    for index, row in df.iterrows():
-        # print(row[1])
-        if row[1] == "<0>":
-            # print("HERE")
-            df.drop(index=index, inplace=True)
-    return df
+    return df.loc[df["key"] != "<0>"]
 
 
 def balance_lists(release, press):
-    if len(press) > len(release):
-        while len(release) < len(press):
-            press.pop()
-    else:
-        while len(release) > len(press):
-            release.pop()
+    length_diff = len(press) - len(release)
+    if length_diff > 0:
+        press = press[:-length_diff]
+    elif length_diff < 0:
+        release = release[: len(release) + length_diff]
     return (release, press)
 
 
@@ -53,8 +46,10 @@ def get_KHT_features(df, use_new_dataset=True):
         else:
             rows_for_key = processed_df.loc[processed_df["key"] == key]
         if use_new_dataset is False:
-            press_rows_for_key = rows_for_key.loc[rows_for_key[0] == "P"][2].tolist()
-            release_rows_for_key = rows_for_key.loc[rows_for_key[0] == "R"][2].tolist()
+            press_rows_for_key = rows_for_key.loc[rows_for_key[0] == "P"][2].tolist(
+            )
+            release_rows_for_key = rows_for_key.loc[rows_for_key[0] == "R"][2].tolist(
+            )
         else:
             press_rows_for_key = rows_for_key.loc[rows_for_key["direction"] == "P"][
                 "time"
@@ -80,23 +75,48 @@ def get_KHT_features(df, use_new_dataset=True):
     return features
 
 
+def select_in_df(df, start, end):
+    return df[start:end].values.tolist()
+
+
+def sliding_window_KHT(processed_df, window_size):
+    features = defaultdict(list)
+    for i, g in processed_df.groupby(processed_df.index // 4):
+        print("Index:", i)
+        unique_keys = g.iloc[:, 1].unique()
+        for key in unique_keys:
+            rows_for_key = g.loc[g["key"] == key]
+            press_rows_for_key = rows_for_key.loc[rows_for_key["direction"] == "P"][
+                "time"
+            ].tolist()
+            release_rows_for_key = rows_for_key.loc[rows_for_key["direction"] == "R"][
+                "time"
+            ].tolist()
+            try:
+                result = np.subtract(release_rows_for_key, press_rows_for_key)
+            except ValueError:
+                print("BAD")
+                print(g)
+                continue
+            for element in result:
+                # FIXME: Check if this condition is needed due to a data issue or a problem in the code (this could be because of the list balancing causing misalignments in the subtraction)
+                if element < 0:
+                    continue
+                features[key].append(element)
+    return features
+
+
 def unique_kit_keypairs(df):
     processed_df = remove_invalid_keystrokes(df)
 
-    all_keys = processed_df.iloc[:, 1]
-    print(all_keys)
-    pairs = []
-    for first, second in zip(all_keys, all_keys[1:]):
-        pair = []
-        if not first == second:
-            pair.append(first)
-            pair.append(second)
-            pairs.append(pair)
-    return pairs
+    keys = list(processed_df.iloc[:, 1])
+    pairs = [
+        (keys[i], keys[i + 1]) for i in range(len(keys) - 1) if keys[i] != keys[i + 1]
+    ]
+    return set(pairs)
 
 
-def kit_features(base_df, feature_type, use_new_dataset=True):
-    df = remove_invalid_keystrokes(base_df)
+def kit_features(df, feature_type, use_new_dataset=True):
     pairs = unique_kit_keypairs(df)
     if feature_type == 1:
         first_event_type = "R"
@@ -156,7 +176,54 @@ def kit_features(base_df, feature_type, use_new_dataset=True):
         first_timing = first_key_search_res[2]
         df.at[second_key_index, "visited"] = True
         second_timing = second_key_search_res[2]
-        features[key_pair[0] + key_pair[1]].append(second_timing - first_timing)
+        features[key_pair[0] + key_pair[1]
+                 ].append(second_timing - first_timing)
+
+    return features
+
+
+def sliding_window_KIT(processed_df, feature_type):
+    if feature_type == 1:
+        first_event_type = "R"
+        second_event_type = "P"
+    elif feature_type == 2:
+        first_event_type = "R"
+        second_event_type = "R"
+    elif feature_type == 3:
+        first_event_type = "P"
+        second_event_type = "P"
+    elif feature_type == 4:
+        first_event_type = "P"
+        second_event_type = "R"
+    df["visited"] = False
+    features = defaultdict(list)
+    for i, g in processed_df.groupby(processed_df.index // 4):
+        print(i)
+        pairs = unique_kit_keypairs(g)
+        for key_pair in pairs:
+            first_key_search_res = df.loc[
+                (df["direction"] == first_event_type)
+                & (~df["visited"])
+                & (df["key"] == key_pair[0])
+            ]
+            second_key_search_res = df.loc[
+                (df["direction"] == second_event_type)
+                & (~df["visited"])
+                & (df["key"] == key_pair[1])
+            ]
+            if first_key_search_res.empty or second_key_search_res.empty:
+                features[key_pair[0] + key_pair[1]].append([])
+                continue
+            first_key_index = first_key_search_res.index[0]
+            first_key_search_res = first_key_search_res.iloc[0]
+            second_key_index = second_key_search_res.index[0]
+            second_key_search_res = second_key_search_res.iloc[0]
+            df.at[first_key_index, "visited"] = True
+            first_timing = first_key_search_res[2]
+            df.at[second_key_index, "visited"] = True
+            second_timing = second_key_search_res[2]
+            features[key_pair[0] + key_pair[1]
+                     ].append(second_timing - first_timing)
 
     return features
 
@@ -164,34 +231,30 @@ def kit_features(base_df, feature_type, use_new_dataset=True):
 def compare_algos():
     df = get_new_format()
     res1 = get_KHT_features(df)
-    df = pd.read_csv(os.path.join(os.getcwd(), "samples", "s1.csv"), header=None)
+    df = pd.read_csv(os.path.join(
+        os.getcwd(), "samples", "s1.csv"), header=None)
     res2 = get_KHT_features(df, False)
     return res1 == res2
 
 
 if __name__ == "__main__":
     df = get_new_format()
-
-    # data = get_KHT_features(df)
-    # processed_KHT_data = {}
-    # for key in list(data.keys()):
-    #     res = remove_outliers_for_dictionary_data(data[key])
-    #     processed_KHT_data[key] = res
-    # print("Outlier Removed Data:")
-    # print(processed_KHT_data)
-    # input("KHT")
-
-    # TODO: Spawn distinct threads to run each of the KIT flight calculations in parallel
-    # https://stackoverflow.com/questions/46301933/how-to-wait-till-all-threads-finish-their-work
-    data = print(kit_features(df, 1))
-    with open("kit_features_" + 1, "w") as f:
-        f.write(data)
-    data = print(kit_features(df, 2))
-    with open("kit_features_" + 2, "w") as f:
-        f.write(data)
-    data = print(kit_features(df, 3))
-    with open("kit_features_" + 3, "w") as f:
-        f.write(data)
-    data = print(kit_features(df, 4))
-    with open("kit_features_" + 4, "w") as f:
-        f.write(data)
+    print(unique_kit_keypairs(df))
+    input("Keypairs")
+    cols = df.columns
+    # sliding_window_KHT(df, 4)
+    # input()
+    print(cols)
+    sliding_window_KIT(df, 4)
+    input()
+    user_ids = list(df["user_ids"].unique())
+    for user_id in user_ids:
+        sub_df = df[df["user_ids"] == id]
+        data = sliding_window_KHT(sub_df, 4)
+        with open(
+            os.path.join(
+                os.getcwd(), "features", "kht", "KHT_for_" + str(user_id) + ".json"
+            ),
+            "w",
+        ) as f:
+            json.dump(data, f)
