@@ -12,8 +12,7 @@ def get_new_format():
         os.path.join(os.getcwd(), "samples", "fpd_new_session_no_nans.csv"),
     )
     df = df[["direction", "key", "time", "user_ids"]]
-    df = df.astype({"direction": str, "key": str,
-                   "time": float, "user_ids": str})
+    df = df.astype({"direction": str, "key": str, "time": float, "user_ids": str})
     return remove_invalid_keystrokes(df)
 
 
@@ -46,10 +45,8 @@ def get_KHT_features(df, use_new_dataset=True):
         else:
             rows_for_key = processed_df.loc[processed_df["key"] == key]
         if use_new_dataset is False:
-            press_rows_for_key = rows_for_key.loc[rows_for_key[0] == "P"][2].tolist(
-            )
-            release_rows_for_key = rows_for_key.loc[rows_for_key[0] == "R"][2].tolist(
-            )
+            press_rows_for_key = rows_for_key.loc[rows_for_key[0] == "P"][2].tolist()
+            release_rows_for_key = rows_for_key.loc[rows_for_key[0] == "R"][2].tolist()
         else:
             press_rows_for_key = rows_for_key.loc[rows_for_key["direction"] == "P"][
                 "time"
@@ -176,8 +173,7 @@ def kit_features(df, feature_type, use_new_dataset=True):
         first_timing = first_key_search_res[2]
         df.at[second_key_index, "visited"] = True
         second_timing = second_key_search_res[2]
-        features[key_pair[0] + key_pair[1]
-                 ].append(second_timing - first_timing)
+        features[key_pair[0] + key_pair[1]].append(second_timing - first_timing)
 
     return features
 
@@ -222,8 +218,7 @@ def sliding_window_KIT(processed_df, feature_type):
             first_timing = first_key_search_res[2]
             df.at[second_key_index, "visited"] = True
             second_timing = second_key_search_res[2]
-            features[key_pair[0] + key_pair[1]
-                     ].append(second_timing - first_timing)
+            features[key_pair[0] + key_pair[1]].append(second_timing - first_timing)
 
     return features
 
@@ -231,8 +226,7 @@ def sliding_window_KIT(processed_df, feature_type):
 def compare_algos():
     df = get_new_format()
     res1 = get_KHT_features(df)
-    df = pd.read_csv(os.path.join(
-        os.getcwd(), "samples", "s1.csv"), header=None)
+    df = pd.read_csv(os.path.join(os.getcwd(), "samples", "s1.csv"), header=None)
     res2 = get_KHT_features(df, False)
     return res1 == res2
 
@@ -244,12 +238,12 @@ if __name__ == "__main__":
     cols = df.columns
     # sliding_window_KHT(df, 4)
     # input()
-    print(cols)
-    sliding_window_KIT(df, 4)
-    input()
+    # print(cols)
+    # sliding_window_KIT(df, 4)
+    # input()
     user_ids = list(df["user_ids"].unique())
     for user_id in user_ids:
-        sub_df = df[df["user_ids"] == id]
+        sub_df = df[df["user_ids"] == user_id]
         data = sliding_window_KHT(sub_df, 4)
         with open(
             os.path.join(
