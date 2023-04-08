@@ -233,8 +233,6 @@ def compare_algos():
 
 if __name__ == "__main__":
     df = get_new_format()
-    print(unique_kit_keypairs(df))
-    input("Keypairs")
     cols = df.columns
     # sliding_window_KHT(df, 4)
     # input()
@@ -244,11 +242,15 @@ if __name__ == "__main__":
     user_ids = list(df["user_ids"].unique())
     for user_id in user_ids:
         sub_df = df[df["user_ids"] == user_id]
-        data = sliding_window_KHT(sub_df, 4)
-        with open(
-            os.path.join(
-                os.getcwd(), "features", "kht", "KHT_for_" + str(user_id) + ".json"
-            ),
-            "w",
-        ) as f:
-            json.dump(data, f)
+        for i in range(1, 5):
+            data = sliding_window_KIT(sub_df, i)
+            with open(
+                os.path.join(
+                    os.getcwd(),
+                    "features",
+                    "kit",
+                    "KIT" + str(i) + "_for_" + str(user_id) + ".json",
+                ),
+                "w",
+            ) as f:
+                json.dump(data, f)
