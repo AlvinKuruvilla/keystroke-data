@@ -8,6 +8,32 @@ def get_json_values_for_key(path: str, key: str):
         data = json.load(json_file)
     return data.get("'" + key + "'")
 
+def get_kit_keys(path):
+    with open(path) as json_file:
+        res =json.load(json_file)
+        k = list(res.keys())
+        store = set()
+        for s in k:
+            try:
+                store.add(eval(s))
+            except SyntaxError:
+                store.add(find_enclosed_string(s))
+            except NameError:
+                store.add(handle_concatenated_special_keys(s))
+    return list(store)
+def tuple_to_string(t):
+    return ''.join(t)
+
+def get_clean_kit_keys(path):
+    keys = get_kit_keys(path)
+    clean = set()
+    for key in keys:
+        if type(key) == str:
+            clean.add(key)
+        elif type(key) == tuple:
+            clean.add(tuple_to_string(key))
+    return clean
+    
 
 def get_kit_json_values_for_key(path: str, key: str):
     with open(path) as json_file:
@@ -55,11 +81,33 @@ def kht_matrix(dict):
         row[index] = value
         matrix.append(row)
     return matrix
+def find_enclosed_string(text):
+    # Find the index of the first single quote
+    start_index = text.find("'")
 
+    # Find the index of the second single quote
+    end_index = text.find("'", start_index + 1)
 
-res = parse_kit_average_dict_from_values(
-    "/Users/alvinkuruvilla/Dev/keystroke-research/keystroke-data/features/kit/KIT1_for_1.json"
-)
-k = list(res.keys())
-for s in k:
-    print((s))
+    # Extract the substring between the two single quotes
+    enclosed_string = text[start_index + 1:end_index]
+    
+    # Remove the enclosed string from the original string
+    new_string = text[:start_index] + text[end_index + 1:]
+
+    return (new_string,enclosed_string)
+
+def handle_concatenated_special_keys(text):
+    substring = "Key"
+    substring_count = text.count(substring)
+    # Key.xKey.y
+    if substring_count == 2:
+        first_index = text.find(substring)
+        second_index = text.find(substring, first_index + 1)
+        return (text[:first_index], text[second_index:])
+
+res = get_clean_kit_keys("/Users/alvinkuruvilla/Dev/keystroke-data/features/kit/KIT1_for_1.json")
+# for key in res:
+#     print(get_kit_json_values_for_key("/Users/alvinkuruvilla/Dev/keystroke-data/features/kit/KIT1_for_1.json", key))
+for key in res:
+    print(get_kit_json_values_for_key("/Users/alvinkuruvilla/Dev/keystroke-data/features/kit/KIT1_for_1.json", key))
+
