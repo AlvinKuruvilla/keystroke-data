@@ -242,15 +242,14 @@ if __name__ == "__main__":
     user_ids = list(df["user_ids"].unique())
     for user_id in user_ids:
         sub_df = df[df["user_ids"] == user_id]
-        for i in range(1, 5):
-            data = sliding_window_KIT(sub_df, i)
-            with open(
-                os.path.join(
-                    os.getcwd(),
-                    "features",
-                    "kit",
-                    "KIT" + str(i) + "_for_" + str(user_id) + ".json",
-                ),
-                "w",
-            ) as f:
-                json.dump(data, f)
+        print(sub_df.shape)
+        input()
+        data = sliding_window_KIT(sub_df, 1)
+        with open(
+            os.path.join(
+                os.getcwd(), "features", "kit", f"KIT_1_for_{str(user_id)}.json"
+            ),
+            "w",
+        ) as f:
+            json.dump(data, f)
+        break
