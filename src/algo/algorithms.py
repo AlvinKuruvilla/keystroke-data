@@ -230,7 +230,6 @@ def compare_algos():
     res2 = get_KHT_features(df, False)
     return res1 == res2
 
-
 if __name__ == "__main__":
     df = get_new_format()
     cols = df.columns
