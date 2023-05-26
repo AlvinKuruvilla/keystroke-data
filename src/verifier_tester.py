@@ -1,0 +1,8 @@
+from verifiers.similarity_verifier import SimilarityVerifier
+from verifiers.template_generator import create_kht_template_for_user_and_platform_id, create_kht_verification_attempt_for_user_and_platform_id
+template = create_kht_template_for_user_and_platform_id(1,1)
+print()
+verification = create_kht_verification_attempt_for_user_and_platform_id(1)
+
+s_verifier = SimilarityVerifier(template, verification)
+print(s_verifier.find_match_percent())
