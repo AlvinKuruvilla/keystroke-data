@@ -16,6 +16,6 @@ class SimilarityVerifier:
             except statistics.StatisticsError:
                 template_stdev = 10
             verification_mean = statistics.mean(self.verification[key])
-            if template_mean - template_stdev <verification_mean and verification_mean <template_mean+ template_stdev:
+            if template_mean - template_stdev <verification_mean <template_mean+ template_stdev:
                 matches +=1
         return matches/len(matching_keys)
