@@ -6,6 +6,9 @@ class SimilarityVerifier:
         self.verification = raw_verification
     def get_all_matching_keys(self):
         return list(set(self.template.keys()).intersection(set (self.verification.keys())))
+    # Compute the match score for all the matching keys by seeing if the verification mean
+    # falls in the range of the template mean + or - the standard deviation. 
+    # I wasn't sure how to handle the case where there was not enough points to compute the standard deviation
     def find_match_percent(self):
         matching_keys = self.get_all_matching_keys()
         matches = 0
