@@ -1,7 +1,5 @@
-def max_unigraph_disorder(n):
-    return (n*n)-1
-def max_digraph_disorder(n):
-    return ((n*n)-1)/2
+def max_disorder(n):
+    return ((n*n))/2 if n%2 ==0 else ((n*n)-1)/2
 class RelativeVerifier:
     def __init__(self, raw_template, raw_verification):
         self.template = raw_template
@@ -15,16 +13,11 @@ class RelativeVerifier:
     # Then that value is divided by the max disorder. 
     # For the unigraphs I believe it is just one less than the number of matching keys squared (though I'm not 100% certain of that) 
     # For digraphs it is the same as unigraphs except divided by 2
-    def calculate_disorder(self, using_digraphs):
+    def calculate_disorder(self):
         matching_keys = self.get_all_matching_keys()
         disorder = 0
         template_keys, verification_keys = self.keys_for_template_and_verification()
-        if using_digraphs == False:
-            for key in matching_keys:
-                disorder = disorder + abs(template_keys.index(key) - verification_keys.index(key))
-            return disorder/max_unigraph_disorder(len(matching_keys))
-        else:
-            for key in matching_keys:
-                disorder = disorder + abs(template_keys.index(key) - verification_keys.index(key))
-            return disorder/max_digraph_disorder((len(matching_keys)))
-
+        for key in matching_keys:
+            disorder = disorder + abs(template_keys.index(key) - verification_keys.index(key))
+        return disorder/max_disorder(len(matching_keys))
+        

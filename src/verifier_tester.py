@@ -23,11 +23,11 @@ def cross_user_r_kht_test():
     same_user_kht_template = create_kht_template_for_user_and_platform_id(chosen_user, 1)
     same_user_kht_verification = create_kht_verification_attempt_for_user_and_platform_id(chosen_user)
     r_verifier = RelativeVerifier(same_user_kht_template, same_user_kht_verification)
-    print(f"Same user KHT disorder score for id {str(chosen_user)} is {str(r_verifier.calculate_disorder(False))}")
+    print(f"Same user KHT disorder for id {str(chosen_user)} is {str(r_verifier.calculate_disorder())}")
     for remaining_id in ids:
         other_user_verification = create_kht_verification_attempt_for_user_and_platform_id(remaining_id)
         s_verifier = SimilarityVerifier(same_user_kht_template, other_user_verification)
-        print(f"Cross user KHT fidorder score for id {str(chosen_user)} and {str(remaining_id)} is {str(s_verifier.find_match_percent())}")
+        print(f"Cross user KHT disorder for id {str(chosen_user)} and {str(remaining_id)} is {str(s_verifier.find_match_percent())}")
 
 
 
@@ -42,8 +42,8 @@ for i in range(1,28):
     # print(s_verifier.find_match_percent())
     kht_r_verifier = RelativeVerifier(kht_template, kht_verification)
     kit_r_verifier = RelativeVerifier(kit_template, kit_verification)
-    print("KIT R Verifier: "+ str(kit_r_verifier.calculate_disorder(True)))
-    print("KHT Verifier:" + str(kht_r_verifier.calculate_disorder(False)))
+    print("KIT R Verifier: "+ str(kit_r_verifier.calculate_disorder()))
+    print("KHT Verifier:" + str(kht_r_verifier.calculate_disorder()))
 print("================================================================ S Verifier KHT =================================================")
 for i in range(1,28):
     kht_template = create_kht_template_for_user_and_platform_id(i, 1)
@@ -64,7 +64,7 @@ for i in range(1,28):
         kht_template = create_kit_flight_template_for_user_and_platform(i, j)
         kht_verification = create_kit_flight_verification_attempt_for_user_and_platform(i, j)
         r_verifier = RelativeVerifier(kht_template, kht_verification)
-        print(r_verifier.calculate_disorder(True))
+        print(r_verifier.calculate_disorder())
     print()
 cross_user_r_kht_test()
 cross_user_s_kht_test()
