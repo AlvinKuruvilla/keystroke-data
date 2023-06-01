@@ -1,13 +1,14 @@
 import statistics
 
-class SimilarityVerifier:
+from verifiers.verifier import Verifier
+
+
+class SimilarityVerifier(Verifier):
     def __init__(self, raw_template, raw_verification):
-        self.template = raw_template
-        self.verification = raw_verification
-    def get_all_matching_keys(self):
-        return list(set(self.template.keys()).intersection(set (self.verification.keys())))
+        super().__init__(raw_template, raw_verification)
+
     # Compute the match score for all the matching keys by seeing if the verification mean
-    # falls in the range of the template mean + or - the standard deviation. 
+    # falls in the range of the template mean + or - the standard deviation.
     # I wasn't sure how to handle the case where there was not enough points to compute the standard deviation
     def find_match_percent(self):
         matching_keys = self.get_all_matching_keys()
@@ -18,8 +19,11 @@ class SimilarityVerifier:
                 template_stdev = statistics.stdev(self.template[key])
             except statistics.StatisticsError:
                 template_stdev = 10
-            # TODO: Take each timing of the verification attempt for a key as a seperate match
-            verification_mean = statistics.mean(self.verification[key])
-            if template_mean - template_stdev <verification_mean <template_mean+ template_stdev:
-                matches +=1
-        return matches/len(matching_keys)
+            for times in self.verification[key]:
+                if (
+                    template_mean - template_stdev
+                    < times
+                    < template_mean + template_stdev
+                ):
+                    matches += 1
+        return matches / len(matching_keys)
