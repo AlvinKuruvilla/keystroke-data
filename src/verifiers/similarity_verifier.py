@@ -14,7 +14,7 @@ class SimilarityVerifier(Verifier):
         matching_keys = self.get_all_matching_keys()
         matches = 0
         for key in matching_keys:
-            template_mean = statistics.mean(self.template[key])
+            template_mean = statistics.mean(list(self.template[key]))
             try:
                 template_stdev = statistics.stdev(self.template[key])
             except statistics.StatisticsError:

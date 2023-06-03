@@ -17,6 +17,6 @@ class AbsoluteVerifier(Verifier):
                 template_mean, verification_mean
             )
             threshold = max(self.template[key]) / min(self.verification[key])
-            if ratio < threshold:
+            if ratio <= threshold:
                 matches += 1
         return 1 - (matches / len(matching_keys))
