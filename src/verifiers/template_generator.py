@@ -1,8 +1,6 @@
 import os
 import pandas as pd
 from collections import defaultdict
-
-
 def read_compact_format():
     return pd.read_csv(os.path.join(os.getcwd(), "cleaned.csv"))
 

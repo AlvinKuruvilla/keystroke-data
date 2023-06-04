@@ -15,7 +15,8 @@ class RelativeVerifier(Verifier):
     # The disorder is calculated as the difference in position between all of the matching keys
     # between the template and the verification attempt
     # Then that value is divided by the max disorder.
-    # For the unigraphs I believe it is just one less than the number of matching keys squared (though I'm not 100% certain of that)
+    # For the unigraphs I believe it is just one less than the number of
+    # matching keys squared (though I'm not 100% certain of that)
     # For digraphs it is the same as unigraphs except divided by 2
     def calculate_disorder(self):
         matching_keys = self.get_all_matching_keys()
