@@ -13,6 +13,8 @@ class SimilarityVerifier(Verifier):
     def find_match_percent(self):
         matching_keys = self.get_all_matching_keys()
         matches = 0
+        if len(matching_keys) == 0:
+            return 0
         for key in matching_keys:
             template_mean = statistics.mean(list(self.template[key]))
             try:

@@ -9,8 +9,11 @@ class AbsoluteVerifier(Verifier):
 
     def find_match_percent(self):
         matching_keys = self.get_all_matching_keys()
+        if len(matching_keys) == 0:
+            return 0
         matches = 0
         for key in matching_keys:
+            print(self.verification[key])
             template_mean = statistics.mean(self.template[key])
             verification_mean = statistics.mean(self.verification[key])
             ratio = max(template_mean, verification_mean) / min(

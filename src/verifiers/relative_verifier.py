@@ -20,9 +20,13 @@ class RelativeVerifier(Verifier):
     def calculate_disorder(self):
         matching_keys = self.get_all_matching_keys()
         disorder = 0
+        if len(matching_keys) == 0:
+            return 0
         template_keys, verification_keys = self.keys_for_template_and_verification()
         for key in matching_keys:
             disorder = disorder + abs(
                 template_keys.index(key) - verification_keys.index(key)
             )
+        print(max_disorder(1))
+        print(len(matching_keys))
         return disorder / max_disorder(len(matching_keys))
