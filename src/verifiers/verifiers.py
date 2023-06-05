@@ -1,6 +1,5 @@
 import statistics
 
-
 class Verifiers:
         def __init__(self, p1, p2):
             # p1 and p2 are dictionaries of features
