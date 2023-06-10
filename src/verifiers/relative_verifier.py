@@ -10,7 +10,7 @@ class RelativeVerifier(Verifier):
         super().__init__(raw_template, raw_verification)
 
     def keys_for_template_and_verification(self):
-        return (list(self.template.keys()), list(self.verification.keys()))
+        return (list(self.enroll.keys()), list(self.verification.keys()))
 
     # The disorder is calculated as the difference in position between all of the matching keys
     # between the template and the verification attempt

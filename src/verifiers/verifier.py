@@ -1,9 +1,9 @@
 class Verifier:
     def __init__(self, raw_enroll, raw_verification):
-        self.enroll = raw_enroll   # dictionary of the enrollment features
-        self.verification = raw_verification # dictionary of the verification features
+        self.enroll = raw_enroll  # dictionary of the enrollment features
+        self.verification = raw_verification  # dictionary of the verification features
 
-    '''
+    """
     enroll = {"W":[210, 220, 200, 230], "E":[110, 115, 107], "L":[150, 130, 190, 120], "C":[25, 30, 35, 70], "O":[90, 40, 49]}
     verification = {"W":[200, 205, 203, 225, 245, 190], "E":[25, 30, 35, 70], "L":[150, 130, 190, 120], "N":[25, 30, 35, 70], "S":[90, 40, 49]}    
    
@@ -64,10 +64,12 @@ class Verifier:
     a_match_score = 
     s_match_score = 
     r_match_score = 
-    '''
+    """
 
     def get_common_keys(self):
-        common_keys = set(self.enroll.keys()).intersection(set(self.verification.keys()))
+        common_keys = set(self.enroll.keys()).intersection(
+            set(self.verification.keys())
+        )
         return common_keys
 
     def remove_zero_time_matches(self):
