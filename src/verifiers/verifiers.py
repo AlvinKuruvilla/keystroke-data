@@ -43,7 +43,8 @@ class Verifiers:
 
     def get_similarity_score(self):  # S verifier, each key same weight
         if len(self.common_features) == 0:  # if there exist no common features,
-            raise ValueError("No common features to compare!")
+            return 0
+            # raise ValueError("No common features to compare!")
         key_matches, total_features = 0, 0
         for feature in self.common_features:
             pattern1_mean = statistics.mean(list(self.pattern1[feature]))
@@ -77,7 +78,8 @@ class Verifiers:
         self,
     ):  # S verifier, each feature different weights
         if len(self.common_features) == 0:  # if there exist no common features,
-            raise ValueError("No common features to compare!")
+            return 0
+            # raise ValueError("No common features to compare!")
         matches, total = 0, 0
         for feature in self.common_features:
             enroll_mean = statistics.mean(list(self.pattern1[feature]))
