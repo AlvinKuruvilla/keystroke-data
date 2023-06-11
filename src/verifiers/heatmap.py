@@ -60,8 +60,8 @@ class HeatMap:
     def make_kht_matrix(
         self, enroll_platform_id, probe_platform_id, enroll_session_id, probe_session_id
     ):
-        if not 1 <= enroll_session_id <= 6 or not 1 <= probe_session_id <= 6:
-            raise ValueError("Session ID must be between 1 and 6")
+        # if not 1 <= enroll_session_id <= 6 or not 1 <= probe_session_id <= 6:
+        #     raise ValueError("Session ID must be between 1 and 6")
         if not 1 <= enroll_platform_id <= 3 or not 1 <= probe_platform_id <= 3:
             raise ValueError("Platform ID must be between 1 and 3")
 
@@ -115,6 +115,6 @@ class HeatMap:
             matrix.append(row)
         return matrix
 
-    def plot_heatmap(self, matrix):
-        ax = sns.heatmap(matrix, linewidth=0.5)
-        plt.show()
+    def plot_heatmap(self, matrix, title=None):
+        ax = sns.heatmap(matrix, linewidth=0.5).set_title(title)
+        plt.savefig(title)
