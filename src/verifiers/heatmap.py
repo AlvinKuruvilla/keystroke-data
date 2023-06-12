@@ -33,15 +33,18 @@ def create_kht_data_from_df(df):
 
 def create_kit_data_from_df(df, kit_feature_type):
     kit_dict = defaultdict(list)
-    for i, g in df.groupby(df.index // 2):
-        if g.shape[0] == 1:
-            continue
-        key = g.iloc[0]["key"] + g.iloc[1]["key"]
-        initial_press = g.iloc[0]["press_time"]
-        second_press = g.iloc[1]["press_time"]
-        initial_release = g.iloc[0]["release_time"]
-
-        second_release = g.iloc[1]["release_time"]
+    max_rows = df.shape[0]
+    for i in df.index:
+        if i == max_rows - 1:
+            break
+        # print(df.loc[i])
+        # print(df.loc[i + 1])
+        # input()
+        key = df["key"][i] + df["key"][i + 1]
+        initial_press = df["press_time"][i]
+        second_press = df["press_time"][i + 1]
+        initial_release = df["release_time"][i]
+        second_release = df["release_time"][i + 1]
         if kit_feature_type == 1:
             kit_dict[key].append(float(second_press) - float(initial_release))
         elif kit_feature_type == 2:
