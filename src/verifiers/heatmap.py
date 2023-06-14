@@ -33,26 +33,25 @@ def create_kht_data_from_df(df):
 
 def create_kit_data_from_df(df, kit_feature_type):
     kit_dict = defaultdict(list)
-    max_rows = df.shape[0]
-    for i in df.index:
-        if i == max_rows - 1:
-            break
-        # print(df.loc[i])
-        # print(df.loc[i + 1])
-        # input()
-        key = df["key"][i] + df["key"][i + 1]
-        initial_press = df["press_time"][i]
-        second_press = df["press_time"][i + 1]
-        initial_release = df["release_time"][i]
-        second_release = df["release_time"][i + 1]
-        if kit_feature_type == 1:
-            kit_dict[key].append(float(second_press) - float(initial_release))
-        elif kit_feature_type == 2:
-            kit_dict[key].append(float(second_release) - float(initial_release))
-        elif kit_feature_type == 3:
-            kit_dict[key].append(float(second_press) - float(initial_press))
-        elif kit_feature_type == 4:
-            kit_dict[key].append(float(second_release) - float(initial_press))
+    max_rows = len(df)
+    for i, row in df.iterrows():
+        current_row = row
+        if i < max_rows - 1:
+            next_row = df.loc[i + 1]
+
+            key = current_row["key"] + next_row["key"]
+            initial_press = current_row["press_time"]
+            second_press = next_row["press_time"]
+            initial_release = current_row["release_time"]
+            second_release = next_row["release_time"]
+            if kit_feature_type == 1:
+                kit_dict[key].append(float(second_press) - float(initial_release))
+            elif kit_feature_type == 2:
+                kit_dict[key].append(float(second_release) - float(initial_release))
+            elif kit_feature_type == 3:
+                kit_dict[key].append(float(second_press) - float(initial_press))
+            elif kit_feature_type == 4:
+                kit_dict[key].append(float(second_release) - float(initial_press))
     return kit_dict
 
 
@@ -118,6 +117,42 @@ class HeatMap:
             matrix.append(row)
         return matrix
 
+    def make_combined_kht_kit_matrix(
+        self,
+        enroll_platform_id,
+        probe_platform_id,
+        enroll_session_id,
+        probe_session_id,
+        kit_feature_type,
+    ):
+        if not 1 <= enroll_session_id <= 6 or not 1 <= probe_session_id <= 6:
+            raise ValueError("Session ID must be between 1 and 6")
+        if not 1 <= enroll_platform_id <= 3 or not 1 <= probe_platform_id <= 3:
+            raise ValueError("Platform ID must be between 1 and 3")
+        if not 1 <= kit_feature_type <= 4:
+            raise ValueError("KIT feature type must be between 1 and 4")
+        matrix = []
+        for i in range(1, 28):
+            df = get_user_by_platform(i, enroll_platform_id, enroll_session_id)
+            kht_enrollment = create_kht_data_from_df(df)
+            kit_enrollment = create_kit_data_from_df(df, kit_feature_type)
+            combined_enrollment = kht_enrollment | kit_enrollment
+            row = []
+            for j in range(1, 28):
+                df = get_user_by_platform(j, probe_platform_id, probe_session_id)
+                kht_probe = create_kht_data_from_df(df)
+                kit_probe = create_kit_data_from_df(df, kit_feature_type)
+                combined_probe = kht_probe | kit_probe
+                v = Verifiers(combined_enrollment, combined_probe)
+                if self.verifier_type == VerifierType.Absolute:
+                    row.append(v.get_abs_match_score())
+                elif self.verifier_type == VerifierType.Similarity:
+                    row.append(v.get_weighted_similarity_score())
+                elif self.verifier_type == VerifierType.SimilarityUnweighted:
+                    row.append(v.get_similarity_score())
+            matrix.append(row)
+        return matrix
+
     def plot_heatmap(self, matrix, title=None):
-        ax = sns.heatmap(matrix, linewidth=0.5).set_title(title)
+        sns.heatmap(matrix, linewidth=0.5).set_title(title)
         plt.savefig(title)
