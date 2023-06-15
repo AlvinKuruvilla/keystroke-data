@@ -2,6 +2,7 @@ import enum
 from collections import defaultdict
 import matplotlib.pyplot as plt
 import seaborn as sns
+from verifiers.itad import ITADVerifier
 from verifiers.template_generator import read_compact_format
 from verifiers.verifiers import Verifiers
 
@@ -11,6 +12,7 @@ class VerifierType(enum.Enum):
     Similarity = 2
     SimilarityUnweighted = 3
     Absolute = 4
+    Itad = 5
 
 
 def get_user_by_platform(user_id, platform_id, session_id=None):
@@ -82,6 +84,9 @@ class HeatMap:
                     row.append(v.get_weighted_similarity_score())
                 elif self.verifier_type == VerifierType.SimilarityUnweighted:
                     row.append(v.get_similarity_score())
+                elif self.verifier_type == VerifierType.Itad:
+                    itad_verifier = ITADVerifier(enrollment, probe)
+                    row.append(itad_verifier.itad_similarity())
             matrix.append(row)
         return matrix
 
