@@ -1,8 +1,10 @@
 import statistics
 import numpy as np
 
+from verifiers.ecdf import ECDF
 
-def ecdf(data):
+
+def compute_ecdf(data):
     """Compute ECDF"""
     x = np.sort(data)
     n = x.size
@@ -40,7 +42,7 @@ class ITADVerifier:
         # we can find the corresponding y value by y_vals[x_i_index]
         data = list(self.probe[key])
         data.append(x_i)
-        x_vals, y_vals = ecdf(data)
+        x_vals, y_vals = compute_ecdf(data)
         data = list(np.sort(data))
         x_i_index = data.index(x_i)
         return y_vals[x_i_index]
@@ -48,12 +50,14 @@ class ITADVerifier:
     def itad_metric(self, key, sample_duration):
         # In the context of this function, the sample_duration is x_i in the algorithm (in our case, it will be the probe mean)
         m_x = self.get_median_of_common_key(key)
+        ecdf = ECDF(self.probe[key])
         if sample_duration <= m_x:
-            return self.ecdf_of_x(key, sample_duration)
-        return 1 - self.ecdf_of_x(key, sample_duration)
+            # return self.ecdf_of_x(key, sample_duration)
+            return ecdf(sample_duration)
+        # return 1 - self.ecdf_of_x(key, sample_duration)
+        return 1 - ecdf(sample_duration)
 
     def itad_similarity(self, p=0.5):
-        S = 0
         total = 0
         matching_keys = self.get_common_keys()
         for key in matching_keys:
