@@ -2,6 +2,7 @@ import enum
 from collections import defaultdict
 import matplotlib.pyplot as plt
 import seaborn as sns
+from feature_selector import most_frequent_features
 from verifiers.itad import ITADVerifier
 from verifiers.template_generator import read_compact_format
 from verifiers.verifiers import Verifiers
@@ -30,7 +31,10 @@ def create_kht_data_from_df(df):
     kht_dict = defaultdict(list)
     for i, row in df.iterrows():
         kht_dict[row["key"]].append(row["release_time"] - row["press_time"])
-    return kht_dict
+    print("Before:", len(kht_dict.keys()))
+    print("After:", len(most_frequent_features(kht_dict, 5).keys()))
+    # input("Comparing FS results")
+    return most_frequent_features(kht_dict, 5)
 
 
 def create_kit_data_from_df(df, kit_feature_type):
