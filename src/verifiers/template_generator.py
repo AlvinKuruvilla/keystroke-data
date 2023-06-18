@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from collections import defaultdict
 def read_compact_format():
-    return pd.read_csv(os.path.join(os.getcwd(), "cleaned.csv"))
+    return pd.read_csv(os.path.join(os.path.dirname(os.getcwd()), "cleaned.csv"))
 
 
 def get_compact_data_by_user_and_platform_id(user_id, platform_id):
