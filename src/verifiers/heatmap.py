@@ -63,10 +63,10 @@ def create_kit_data_from_df(df, kit_feature_type):
                 kit_dict[key].append(float(second_press) - float(initial_press))
             elif kit_feature_type == 4:
                 kit_dict[key].append(float(second_release) - float(initial_press))
-    # print("Before:", len(kit_dict.keys()))
-    # print("After:", len(most_frequent_features(kit_dict, 100).keys()))
+    print("Before:", len(kit_dict.keys()))
+    print("After:", len(most_frequent_features(kit_dict, 5).keys()))
     # input("Comparing FS results")
-    return kit_dict
+    return most_frequent_features(kit_dict, 5)
 
 
 class HeatMap:
@@ -117,15 +117,12 @@ class HeatMap:
         matrix = []
         for i in range(1, 28):
             df = get_user_by_platform(i, enroll_platform_id, enroll_session_id)
-            print(df)
-            input()
             enrollment = create_kit_data_from_df(df, kit_feature_type)
             row = []
             for j in range(1, 28):
                 df = get_user_by_platform(j, probe_platform_id, probe_session_id)
                 probe = create_kit_data_from_df(df, kit_feature_type)
                 v = Verifiers(enrollment, probe)
-                print(enrollment)
                 if self.verifier_type == VerifierType.Absolute:
                     row.append(v.get_abs_match_score())
                 elif self.verifier_type == VerifierType.Similarity:
@@ -146,8 +143,6 @@ class HeatMap:
         probe_session_id,
         kit_feature_type,
     ):
-        if not 1 <= enroll_session_id <= 6 or not 1 <= probe_session_id <= 6:
-            raise ValueError("Session ID must be between 1 and 6")
         if not 1 <= enroll_platform_id <= 3 or not 1 <= probe_platform_id <= 3:
             raise ValueError("Platform ID must be between 1 and 3")
         if not 1 <= kit_feature_type <= 4:
@@ -171,6 +166,9 @@ class HeatMap:
                     row.append(v.get_weighted_similarity_score())
                 elif self.verifier_type == VerifierType.SimilarityUnweighted:
                     row.append(v.get_similarity_score())
+                elif self.verifier_type == VerifierType.Itad:
+                    itad_verifier = ITADVerifier(combined_enrollment, combined_probe)
+                    row.append(itad_verifier.itad_similarity())
             matrix.append(row)
         return matrix
 
