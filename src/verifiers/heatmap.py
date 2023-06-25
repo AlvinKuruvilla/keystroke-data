@@ -2,8 +2,8 @@ import enum
 from collections import defaultdict
 import matplotlib.pyplot as plt
 import seaborn as sns
-from verifiers.template_generator import read_compact_format
-from verifiers.verifiers import Verifiers
+from src.verifiers.template_generator import read_compact_format
+from src.verifiers.verifiers import Verifiers
 
 
 class VerifierType(enum.Enum):
@@ -11,10 +11,11 @@ class VerifierType(enum.Enum):
     Similarity = 2
     SimilarityUnweighted = 3
     Absolute = 4
+    Itad = 5
 
 
 def get_user_by_platform(user_id, platform_id, session_id=None):
-    print(f'user_id:{user_id}')
+    print(f"user_id:{user_id}")
     df = read_compact_format()
     if session_id is None:
         return df[(df["user_ids"] == user_id) & (df["platform_id"] == platform_id)]
@@ -81,6 +82,8 @@ class HeatMap:
                     row.append(v.get_weighted_similarity_score())
                 elif self.verifier_type == VerifierType.SimilarityUnweighted:
                     row.append(v.get_similarity_score())
+                elif self.verifier_type == VerifierType.Itad:
+                    row.append(v.itad_similarity())
             matrix.append(row)
         return matrix
 
