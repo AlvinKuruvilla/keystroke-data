@@ -1,4 +1,4 @@
-from verifiers.heatmap import HeatMap, VerifierType
+from src.verifiers.heatmap import HeatMap, VerifierType
 heatmap = HeatMap(VerifierType.Absolute)
 matrix = heatmap.make_kht_matrix(1, 1, None, None)
 print(matrix)

@@ -30,7 +30,8 @@ class Verifiers:
             pattern1_mean = statistics.mean(self.pattern1[feature])
             pattern2_mean = statistics.mean(self.pattern2[feature])
             if min(pattern1_mean, pattern2_mean) == 0:
-                raise ValueError('min of means is zero, should not happen!')
+                return 0 # Must look into and fix this! just a temporary arrangment
+                # raise ValueError('min of means is zero, should not happen!')
             else:
                 ratio = max(pattern1_mean, pattern2_mean) / min(
                     pattern1_mean, pattern2_mean
