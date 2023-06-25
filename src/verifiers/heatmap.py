@@ -2,8 +2,8 @@ import enum
 from collections import defaultdict
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src.verifiers.template_generator import read_compact_format
-from src.verifiers.verifiers import Verifiers
+from verifiers.template_generator import read_compact_format
+from verifiers.verifiers import Verifiers
 
 
 class VerifierType(enum.Enum):

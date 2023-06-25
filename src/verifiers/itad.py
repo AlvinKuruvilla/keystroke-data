@@ -1,7 +1,7 @@
 import statistics
 import numpy as np
 
-from src.verifiers.ecdf import ECDF
+from verifiers.ecdf import ECDF
 
 
 def compute_ecdf(data):

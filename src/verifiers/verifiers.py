@@ -1,5 +1,5 @@
 import statistics
-from src.verifiers.ecdf import ECDF
+from verifiers.ecdf import ECDF
 import numpy as np
 
 
