@@ -1,5 +1,7 @@
 import statistics
-from verifier import Verifier
+
+from verifiers.verifier import Verifier
+
 
 class AbsoluteVerifier(Verifier):
     def __init__(self, raw_enroll, raw_verification):
@@ -14,14 +16,16 @@ class AbsoluteVerifier(Verifier):
             print(self.verification[key])
             template_mean = statistics.mean(self.enroll[key])
             verification_mean = statistics.mean(self.verification[key])
-            ratio = max(template_mean, verification_mean) / min(template_mean, verification_mean)
+            ratio = max(template_mean, verification_mean) / min(
+                template_mean, verification_mean
+            )
 
             threshold = max(self.enroll[key]) / min(self.enroll[key])
 
             if ratio <= threshold:
                 matches += 1
 
-        return  (matches / len(common_keys))
+        return matches / len(common_keys)
 
 
 # # local testing
