@@ -175,16 +175,16 @@ def write_pairs_to_file(pairs, path):
             writer.writerow(entry)
 
 
-# df = get_new_format()
-# find_pairs(df)
-cols = read_csv_file(
-    os.path.join(os.getcwd(), "samples", "fpd_new_session_no_nans.csv"),
-)
-# print(cols)
-matching_indices = find_matching_indices(
-    os.path.join(os.getcwd(), "samples", "fpd_new_session_no_nans.csv"),
-)
-write_pairs_to_file(
-    matching_indices,
-    os.path.join(os.getcwd(), "samples", "fpd_new_session_no_nans.csv"),
-)
+df = get_new_format()
+find_pairs(df)
+# cols = read_csv_file(
+#     os.path.join(os.getcwd(), "samples", "fpd_new_session_no_nans.csv"),
+# )
+# # print(cols)
+# matching_indices = find_matching_indices(
+#     os.path.join(os.getcwd(), "samples", "fpd_new_session_no_nans.csv"),
+# )
+# write_pairs_to_file(
+#     matching_indices,
+#     os.path.join(os.getcwd(), "samples", "fpd_new_session_no_nans.csv"),
+# )
