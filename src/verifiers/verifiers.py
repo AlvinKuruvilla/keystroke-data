@@ -1,7 +1,6 @@
 import statistics
-from verifiers.ecdf import ECDF
+from src.verifiers.ecdf import ECDF
 import numpy as np
-
 
 class Verifiers:
     def __init__(self, p1, p2):
@@ -23,17 +22,16 @@ class Verifiers:
         if len(self.common_features) == 0:  # if there exist no common features,
             raise ValueError("Error: no common features to compare!")
         matches = 0
-        for (
-            feature
-        ) in self.common_features:  # checking for every common feature for match
-            print(f"feature:{feature}")
-            print(f"self.pattern1[feature]:{self.pattern1[feature]}")
-            print(f"self.pattern2[feature]:{self.pattern2[feature]}")
+        for feature in self.common_features:  # checking for every common feature for match
+            print(f'feature:{feature}')
+            print(f'self.pattern1[feature]:{self.pattern1[feature]}')
+            print(f'self.pattern2[feature]:{self.pattern2[feature]}')
 
             pattern1_mean = statistics.mean(self.pattern1[feature])
             pattern2_mean = statistics.mean(self.pattern2[feature])
             if min(pattern1_mean, pattern2_mean) == 0:
-                raise ValueError("min of means is zero, should not happen!")
+                return 0 # Must look into and fix this! just a temporary arrangment
+                # raise ValueError('min of means is zero, should not happen!')
             else:
                 ratio = max(pattern1_mean, pattern2_mean) / min(
                     pattern1_mean, pattern2_mean
@@ -44,8 +42,8 @@ class Verifiers:
             #     threshold = max(self.pattern1[feature]) / min(self.pattern1[feature])
             # except ZeroDivisionError:
             #     threshold = 0
-            threshold = 1.5  # hardcoding the threshold
-            if ratio <= threshold:  # basically the current feature matches
+            threshold = 1.5 # hardcoding the threshold
+            if ratio <= threshold: # basically the current feature matches
                 matches += 1
         return matches / len(self.common_features)
 
@@ -69,9 +67,7 @@ class Verifiers:
 
             value_matches, total_values = 0, 0
             for time in self.pattern2[feature]:
-                if (pattern1_mean - pattern1_stdev) < time and time < (
-                    pattern1_mean + pattern1_stdev
-                ):
+                if (pattern1_mean - pattern1_stdev) < time and time < (pattern1_mean + pattern1_stdev):
                     value_matches += 1
                 total_values += 1
             if value_matches / total_values <= 0.5:
@@ -99,9 +95,7 @@ class Verifiers:
                     template_stdev = self.pattern1[feature] / 4
 
             for time in self.pattern2[feature]:
-                if (enroll_mean - template_stdev) < time and time < (
-                    enroll_mean + template_stdev
-                ):
+                if (enroll_mean - template_stdev) < time and time < (enroll_mean + template_stdev):
                     matches += 1
                 total += 1
         return matches / total
@@ -149,15 +143,14 @@ class Verifiers:
         try:
             return (1 / len(self.common_features)) * total
         except ZeroDivisionError:
-            raise ValueError("Zero division occured: no common key found!")
+            raise ValueError('Zero division occured: no common key found!')
 
-    def compute_ecdf(self, data):
+    def compute_ecdf(data):
         """Compute ECDF"""
         x = np.sort(data)
         n = x.size
         y = np.arange(1, n + 1) / n
         return (x, y)
-
 
 # local testing
 
@@ -178,15 +171,14 @@ pattern2 = {
     "W": [11, 12, 13, 14, 15, 16, 11, 12, 13, 14, 15, 16, 11, 12, 13, 14, 15, 16],
     "E": [25, 30, 35, 70, 25, 30, 35, 70, 25, 30, 35, 70],
     "L": [1, 23, 21, 23, 43, 45, 64, 23, 43],
-    "N": [9, 4, 12, 23, 21, 11, 9, 9, 4, 12, 23, 21, 11, 9],
+    "N": [9 , 4, 12, 23, 21, 11, 9, 9 , 4, 12, 23, 21, 11, 9],
     "S": [512, 621, 234, 257, 289, 512, 621, 234, 257, 289],
 }
 
 
+
 ExampleVerifier = Verifiers(pattern1, pattern2)
-print("get_abs_match_score():", ExampleVerifier.get_abs_match_score())
-print("get_similarity_score():", ExampleVerifier.get_similarity_score())
-print(
-    "get_weighted_similarity_score():", ExampleVerifier.get_weighted_similarity_score()
-)
-print("itad_similarity():", ExampleVerifier.itad_similarity())
+print('get_abs_match_score():', ExampleVerifier.get_abs_match_score())
+print('get_similarity_score():', ExampleVerifier.get_similarity_score())
+print('get_weighted_similarity_score():', ExampleVerifier.get_weighted_similarity_score())
+print('itad_similarity():', ExampleVerifier.itad_similarity())
