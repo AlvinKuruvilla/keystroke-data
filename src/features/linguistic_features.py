@@ -12,10 +12,12 @@ def plot_multi_bar_graph(fb_data, insta_data, twitter_data):
     df = pd.DataFrame(np.c_[fb_data, insta_data, twitter_data], index=x)
     df.plot.bar()
 
-    plt.savefig("Shannon Entropy.png")
+    plt.savefig("Shannon.png")
 
 
 def mattr_for_words(words):
+    if len(words) == 0:
+        return 0
     ldvals = ld.lexdiv(words)
     return ldvals.mattr
 
@@ -75,6 +77,8 @@ def type_token_ratio(tokens):
 # each factor. In most texts, a partial factor will occur at the end of the
 # text. MTLD runs both forwards and backwards.
 def mtldo_for_words(words):
+    if len(words) == 0:
+        return 0
     ldvals = ld.lexdiv(words)
     return ldvals.mtldo
 
