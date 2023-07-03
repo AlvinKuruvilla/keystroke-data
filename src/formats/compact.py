@@ -20,6 +20,16 @@ def get_new_format():
     return remove_invalid_keystrokes(df)
 
 
+def read_new_file(path: str):
+    df = pd.read_csv(
+        path,
+        usecols=["key", "direction", "time", "platform_ids", "user_ids", "session_ids"],
+    )
+    df["direction"] = df["direction"].replace({0: "P", 1: "R"})
+    df = df.astype({"direction": str, "key": str, "time": float, "user_ids": str})
+    return remove_invalid_keystrokes(df)
+
+
 # TODO: Lots of correctness checks need to be done
 def find_pairs_potentially_optimized(df):
     df["visited"] = False
@@ -175,8 +185,13 @@ def write_pairs_to_file(pairs, path):
             writer.writerow(entry)
 
 
-df = get_new_format()
+df = read_new_file(
+    os.path.join(
+        os.getcwd(), "samples", "social_network_dataset_hofstra_old_session.csv"
+    )
+)
 find_pairs(df)
+# df = get_new_format()
 # cols = read_csv_file(
 #     os.path.join(os.getcwd(), "samples", "fpd_new_session_no_nans.csv"),
 # )

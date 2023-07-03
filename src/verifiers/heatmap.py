@@ -2,8 +2,8 @@ import enum
 import matplotlib.pyplot as plt
 import seaborn as sns
 from features.keystroke_features import create_kht_data_from_df, create_kit_data_from_df
-from src.verifiers.template_generator import read_compact_format
-from src.verifiers.verifiers import Verifiers
+from verifiers.template_generator import read_compact_format
+from verifiers.verifiers import Verifiers
 
 
 class VerifierType(enum.Enum):
@@ -39,11 +39,15 @@ class HeatMap:
             raise ValueError("Platform ID must be between 1 and 3")
 
         matrix = []
-        for i in range(1, 28):
+        # TODO: We have to do a better job of figuring out how many users there
+        # are automatically so we don't need to keep changing it manually
+        for i in range(1, 26):
             df = get_user_by_platform(i, enroll_platform_id, enroll_session_id)
             enrollment = create_kht_data_from_df(df)
             row = []
-            for j in range(1, 28):
+            # TODO: We have to do a better job of figuring out how many users there
+            # are automatically so we don't need to keep changing it manually
+            for j in range(1, 26):
                 df = get_user_by_platform(j, probe_platform_id, probe_session_id)
                 probe = create_kht_data_from_df(df)
                 v = Verifiers(enrollment, probe)

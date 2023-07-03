@@ -38,6 +38,7 @@ class CSM:
         numerator = 0
         denominator = 0
         for term in terms:
+            print(query_ndtw.calculate_ndtw(term))
             numerator += query_ndtw.calculate_ndtw(term) * doc_ndtw.calculate_ndtw(term)
             denominator += math.sqrt(
                 math.pow(query_ndtw.calculate_ndtw(term), 2)
