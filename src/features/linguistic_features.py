@@ -1,10 +1,24 @@
-from taaled import ld
+import os
+import enum
+import seaborn as sns
 import collections
+from taaled import ld
 from scipy.stats import entropy
+from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from nltk.corpus import wordnet as wn
+from features.word_parser import SentenceParser
+from scipy.spatial import distance
+
+from verifiers.heatmap import get_user_by_platform
+
+
+class LinguisticFeature(enum.Enum):
+    MATTR = 1
+    MTLDO = 2
+    Shannon = 3
 
 
 def plot_multi_bar_graph(fb_data, insta_data, twitter_data):
@@ -147,4 +161,52 @@ def lexical_diversity(tokens):
         return lexical_word_count / word_count
 
 
-# Linguistic Features from: https://par.nsf.gov/servlets/purl/10282263
+def create_linguistic_feature_matrix(
+    enroll_platform_id,
+    probe_platform_id,
+    enroll_session_id,
+    probe_session_id,
+    linguistic_feature,
+):
+    if not 1 <= enroll_platform_id <= 3 or not 1 <= probe_platform_id <= 3:
+        raise ValueError("Platform ID must be between 1 and 3")
+    matrix = []
+    # TODO: We have to do a better job of figuring out how many users there
+    # are automatically so we don't need to keep changing it manually
+    for i in tqdm(range(1, 26)):
+        df = get_user_by_platform(i, enroll_platform_id, enroll_session_id)
+        sp = SentenceParser(os.path.join(os.getcwd(), "cleaned2.csv"))
+        enrollment_words = sp.get_words(df)
+        row = []
+        for j in range(1, 26):
+            df = get_user_by_platform(j, probe_platform_id, probe_session_id)
+            sp = SentenceParser(os.path.join(os.getcwd(), "cleaned2.csv"))
+            probe_words = sp.get_words(df)
+            if linguistic_feature == LinguisticFeature.MATTR:
+                row.append(
+                    distance.cosine(
+                        [mattr_for_words(enrollment_words)],
+                        [mattr_for_words(probe_words)],
+                    )
+                )
+            elif linguistic_feature == LinguisticFeature.MTLDO:
+                row.append(
+                    distance.cosine(
+                        [mtldo_for_words(enrollment_words)],
+                        [mtldo_for_words(probe_words)],
+                    )
+                )
+            elif linguistic_feature == LinguisticFeature.Shannon:
+                row.append(
+                    distance.cosine(
+                        [estimate_shannon_entropy(enrollment_words)],
+                        [estimate_shannon_entropy(probe_words)],
+                    )
+                )
+        matrix.append(row)
+    return matrix
+
+
+def plot_heatmap(matrix, title=None):
+    sns.heatmap(matrix, linewidth=0.5).set_title(title)
+    plt.savefig(title)
