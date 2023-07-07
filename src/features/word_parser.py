@@ -5,8 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from features.linguistic_features import estimate_shannon_entropy, plot_multi_bar_graph
-
 
 def plot_heatmap(matrix, title=None):
     sns.heatmap(matrix, linewidth=0.5).set_title(title)
