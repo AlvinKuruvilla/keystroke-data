@@ -7,9 +7,10 @@ from features.linguistic_features import (
     plot_multi_bar_graph,
 )
 from features.ndtw import CSM
-from features.word_level import word_hold
+from features.word_level import word_hold, word_hold_matrix, word_unigraph_feature
 
 from features.word_parser import get_user_by_platform, plot_heatmap, SentenceParser
+from verifiers.heatmap import VerifierType
 
 
 def shannon_entropy_similarity():
@@ -52,11 +53,13 @@ def ndtw_test():
     plot_heatmap(matrix, "CSM Facebook-Facebook (new)")
 
 
-matrix = create_linguistic_feature_matrix(1, 1, None, None, LinguisticFeature.MTLDO)
-print(matrix)
-plot_heatmap(matrix, "Linguistic MTLDO")
+# matrix = create_linguistic_feature_matrix(1, 1, None, None, LinguisticFeature.MTLDO)
+# print(matrix)
+# plot_heatmap(matrix, "Linguistic MTLDO")
 # shannon_entropy_similarity()
 # df = get_user_by_platform(1, 1)
-# sp = SentenceParser(os.path.join(os.getcwd(), "cleaned.csv"))
+# sp = SentenceParser(os.path.join(os.getcwd(), "cleaned2.csv"))
 # word_list = sp.get_words(df)
-# print(word_hold(word_list, df))
+# word_hold(word_list, df)
+wh_matrix = word_hold_matrix(1, 1, None, None, VerifierType.Absolute)
+plot_heatmap(wh_matrix, "Word Hold FF")
