@@ -4,6 +4,7 @@ import seaborn as sns
 from features.keystroke_features import create_kht_data_from_df, create_kit_data_from_df
 from verifiers.template_generator import read_compact_format
 from verifiers.verifiers import Verifiers
+from tqdm import tqdm
 
 
 class VerifierType(enum.Enum):
@@ -33,8 +34,6 @@ class HeatMap:
     def make_kht_matrix(
         self, enroll_platform_id, probe_platform_id, enroll_session_id, probe_session_id
     ):
-        # if not 1 <= enroll_session_id <= 6 or not 1 <= probe_session_id <= 6:
-        #     raise ValueError("Session ID must be between 1 and 6")
         if not 1 <= enroll_platform_id <= 3 or not 1 <= probe_platform_id <= 3:
             raise ValueError("Platform ID must be between 1 and 3")
 
@@ -47,7 +46,7 @@ class HeatMap:
             row = []
             # TODO: We have to do a better job of figuring out how many users there
             # are automatically so we don't need to keep changing it manually
-            for j in range(1, 26):
+            for j in tqdm(range(1, 26)):
                 df = get_user_by_platform(j, probe_platform_id, probe_session_id)
                 probe = create_kht_data_from_df(df)
                 v = Verifiers(enrollment, probe)
@@ -59,6 +58,10 @@ class HeatMap:
                     row.append(v.get_similarity_score())
                 elif self.verifier_type == VerifierType.Itad:
                     row.append(v.itad_similarity())
+                else:
+                    raise ValueError(
+                        "Unknown VerifierType {}".format(self.verifier_type)
+                    )
             matrix.append(row)
         return matrix
 
@@ -70,14 +73,12 @@ class HeatMap:
         probe_session_id,
         kit_feature_type,
     ):
-        if not 1 <= enroll_session_id <= 6 or not 1 <= probe_session_id <= 6:
-            raise ValueError("Session ID must be between 1 and 6")
         if not 1 <= enroll_platform_id <= 3 or not 1 <= probe_platform_id <= 3:
             raise ValueError("Platform ID must be between 1 and 3")
         if not 1 <= kit_feature_type <= 4:
             raise ValueError("KIT feature type must be between 1 and 4")
         matrix = []
-        for i in range(1, 28):
+        for i in tqdm(range(1, 28)):
             df = get_user_by_platform(i, enroll_platform_id, enroll_session_id)
             enrollment = create_kit_data_from_df(df, kit_feature_type)
             row = []
@@ -91,6 +92,52 @@ class HeatMap:
                     row.append(v.get_weighted_similarity_score())
                 elif self.verifier_type == VerifierType.SimilarityUnweighted:
                     row.append(v.get_similarity_score())
+                elif self.verifier_type == VerifierType.Itad:
+                    row.append(v.itad_similarity())
+                else:
+                    raise ValueError(
+                        "Unknown VerifierType {}".format(self.verifier_type)
+                    )
+            matrix.append(row)
+        return matrix
+
+    def combined_keystroke_matrix(
+        self,
+        enroll_platform_id,
+        probe_platform_id,
+        enroll_session_id,
+        probe_session_id,
+        kit_feature_type,
+    ):
+        if not 1 <= enroll_platform_id <= 3 or not 1 <= probe_platform_id <= 3:
+            raise ValueError("Platform ID must be between 1 and 3")
+        if not 1 <= kit_feature_type <= 4:
+            raise ValueError("KIT feature type must be between 1 and 4")
+        matrix = []
+        for i in tqdm(range(1, 26)):
+            df = get_user_by_platform(i, enroll_platform_id, enroll_session_id)
+            kht_enrollment = create_kht_data_from_df(df)
+            kit_enrollment = create_kit_data_from_df(df, kit_feature_type)
+            combined_enrollment = kht_enrollment | kit_enrollment
+            row = []
+            for j in range(1, 26):
+                df = get_user_by_platform(j, probe_platform_id, probe_session_id)
+                kht_probe = create_kht_data_from_df(df)
+                kit_probe = create_kit_data_from_df(df, kit_feature_type)
+                combined_probe = kht_probe | kit_probe
+                v = Verifiers(combined_enrollment, combined_probe)
+                if self.verifier_type == VerifierType.Absolute:
+                    row.append(v.get_abs_match_score())
+                elif self.verifier_type == VerifierType.Similarity:
+                    row.append(v.get_weighted_similarity_score())
+                elif self.verifier_type == VerifierType.SimilarityUnweighted:
+                    row.append(v.get_similarity_score())
+                elif self.verifier_type == VerifierType.Itad:
+                    row.append(v.itad_similarity())
+                else:
+                    raise ValueError(
+                        "Unknown VerifierType {}".format(self.verifier_type)
+                    )
             matrix.append(row)
         return matrix
 
