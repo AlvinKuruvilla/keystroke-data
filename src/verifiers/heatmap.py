@@ -40,13 +40,14 @@ class HeatMap:
         matrix = []
         # TODO: We have to do a better job of figuring out how many users there
         # are automatically so we don't need to keep changing it manually
-        for i in range(1, 26):
+        ids = [num for num in range(1, 26) if num != 22]
+        for i in ids:
             df = get_user_by_platform(i, enroll_platform_id, enroll_session_id)
             enrollment = create_kht_data_from_df(df)
             row = []
             # TODO: We have to do a better job of figuring out how many users there
             # are automatically so we don't need to keep changing it manually
-            for j in tqdm(range(1, 26)):
+            for j in ids:
                 df = get_user_by_platform(j, probe_platform_id, probe_session_id)
                 probe = create_kht_data_from_df(df)
                 v = Verifiers(enrollment, probe)
@@ -78,11 +79,12 @@ class HeatMap:
         if not 1 <= kit_feature_type <= 4:
             raise ValueError("KIT feature type must be between 1 and 4")
         matrix = []
-        for i in tqdm(range(1, 28)):
+        ids = [num for num in range(1, 26) if num != 22]
+        for i in tqdm(ids):
             df = get_user_by_platform(i, enroll_platform_id, enroll_session_id)
             enrollment = create_kit_data_from_df(df, kit_feature_type)
             row = []
-            for j in range(1, 28):
+            for j in ids:
                 df = get_user_by_platform(j, probe_platform_id, probe_session_id)
                 probe = create_kit_data_from_df(df, kit_feature_type)
                 v = Verifiers(enrollment, probe)
@@ -114,13 +116,14 @@ class HeatMap:
         if not 1 <= kit_feature_type <= 4:
             raise ValueError("KIT feature type must be between 1 and 4")
         matrix = []
-        for i in tqdm(range(1, 26)):
+        ids = [num for num in range(1, 26) if num != 22]
+        for i in ids:
             df = get_user_by_platform(i, enroll_platform_id, enroll_session_id)
             kht_enrollment = create_kht_data_from_df(df)
             kit_enrollment = create_kit_data_from_df(df, kit_feature_type)
             combined_enrollment = kht_enrollment | kit_enrollment
             row = []
-            for j in range(1, 26):
+            for j in ids:
                 df = get_user_by_platform(j, probe_platform_id, probe_session_id)
                 kht_probe = create_kht_data_from_df(df)
                 kit_probe = create_kit_data_from_df(df, kit_feature_type)
